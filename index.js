@@ -1,6 +1,8 @@
 /**
  * WhatsApp MD Bot - Main Entry Point (A1 Formula Architecture - Final Production Multi-Tier License System)
+ * PART 1: System Environments, Safe Logging Overrides, and License Verification Layer
  */
+
 process.env.PUPPETEER_SKIP_DOWNLOAD = 'true';
 process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = 'true';
 process.env.PUPPETEER_CACHE_DIR = process.env.PUPPETEER_CACHE_DIR || '/tmp/puppeteer_cache_disabled';
@@ -30,42 +32,14 @@ console.warn = (...args) => {
 };
 
 const pino = require('pino');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, delay } = require('@whiskeysockets/baileys');
+const config = require('./config');
+const handler = require('./handler');
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 const os = require('os');
 const readline = require('readline');
-const config = require('./config');
-const handler = require('./handler');
-
-// 🔄 SAFE MULTI-VERSION IMPORTS FOR WHATSAPP CORE
-const Baileys = require('@whiskeysockets/baileys');
-const makeWASocket = Baileys.default || Baileys;
-const { useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, delay } = Baileys;
-
-// 🛡️ DYNAMIC FIX FOR "makeInMemoryStore is not a function"
-let makeInMemoryStore;
-if (typeof Baileys.makeInMemoryStore === 'function') {
-  makeInMemoryStore = Baileys.makeInMemoryStore;
-} else {
-  try {
-    const internalStore = require('@whiskeysockets/baileys/lib/Store');
-    makeInMemoryStore = internalStore.makeInMemoryStore || internalStore.default;
-  } catch (e) {
-    try {
-      makeInMemoryStore = require('@whiskeysockets/baileys/lib/Store/make-in-memory-store');
-    } catch (err) {
-      makeInMemoryStore = () => ({
-        contacts: {},
-        messages: {},
-        chats: { dict: {}, all: () => [] },
-        bind: () => {},
-        readFromFile: () => {},
-        writeToFile: () => {}
-      });
-    }
-  }
-}
 
 // Import System Utilities
 const antidelete = require('./utils/antidelete');
@@ -80,34 +54,95 @@ function cleanupPuppeteerCache() {
   } catch (err) {}
 }
 
-const validCodes = ['EMMY-RUN-8MIN', 'EMMY-24HOURS', 'EMMY-7DAYS', 'EMMY-30DAYS', 'EMMY-PREMIUM-LIFE', 'EMMY-PRO-RENEWAL'];
+// ðŸ•’ DYNAMIC DATE MATH HANDLING - ALL 15+ RECOVERY CODES FULLY PRESERVED
+const timedCodes = {
+  // Original System Layout Codes
+  'EMMY-RUN-8MIN': 8 * 60 * 1000,
+  'EMMY-24HOURS': 24 * 60 * 60 * 1000,
+  'EMMY-7DAYS': 7 * 24 * 60 * 60 * 1000,
+  'EMMY-30DAYS': 30 * 24 * 60 * 60 * 1000,
+  
+  // 24 Hour Express Tiers
+  '24H-SWAP-A1B2': 24 * 60 * 60 * 1000,
+  '24H-EMMY-C3D4': 24 * 60 * 60 * 1000,
+  '24H-BOTS-E5F6': 24 * 60 * 60 * 1000,
+  '24H-RAIL-G7H8': 24 * 60 * 60 * 1000,
+  '24H-GAIN-I9J0': 24 * 60 * 60 * 1000,
 
+  // Weekly Tiers (7 Days)
+  'WK-SWAP-7D11': 7 * 24 * 60 * 60 * 1000,
+  'WK-EMMY-7D22': 7 * 24 * 60 * 60 * 1000,
+  'WK-BOTS-7D33': 7 * 24 * 60 * 60 * 1000,
+  'WK-RAIL-7D44': 7 * 24 * 60 * 60 * 1000,
+  'WK-GAIN-7D55': 7 * 24 * 60 * 60 * 1000,
+
+  // Monthly Tiers (30 Days)
+  'emmy-4week': 30 * 24 * 60 * 60 * 1000,
+  'MNTH-SWAP-30A': 30 * 24 * 60 * 60 * 1000,
+  'MNTH-EMMY-30B': 30 * 24 * 60 * 60 * 1000,
+  'MNTH-BOTS-30C': 30 * 24 * 60 * 60 * 1000,
+  'MNTH-GAIN-30E': 30 * 24 * 60 * 60 * 1000
+};
+
+const validCodes = [...Object.keys(timedCodes), 'EMMY-PREMIUM-LIFE', 'EMMY-PRO-RENEWAL'];
+
+// â±ï¸ Dynamic Dashboard Countdown Calculator Tool
+function getRemainingTime(code) {
+  if (code === 'EMMY-PREMIUM-LIFE' || code === 'EMMY-PRO-RENEWAL') return 'Lifetime Unlimited â™¾ï¸';
+  if (code === 'EMMY-EXPIRED') return 'Expired Plan Interval ðŸš¨';
+  if (!timedCodes[code]) return 'Standard Operational Layer';
+
+  const trackingFile = path.join(__dirname, './utils/expiry_tracker.json');
+  if (!fs.existsSync(trackingFile)) return 'Calculating Balance...';
+
+  try {
+    const trackerData = JSON.parse(fs.readFileSync(trackingFile, 'utf8'));
+    if (trackerData.code !== code) return 'Syncing System Pass...';
+
+    const allowedDuration = timedCodes[code];
+    const elapsed = Date.now() - trackerData.activatedAt;
+    const remaining = allowedDuration - elapsed;
+
+    if (remaining <= 0) return 'Expired Plan Interval ðŸš¨';
+
+    const secs = Math.floor(remaining / 1000);
+    const mins = Math.floor(secs / 60);
+    const hours = Math.floor(mins / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days}d ${hours % 24}h ${mins % 60}m remaining`;
+    if (hours > 0) return `${hours}h ${mins % 60}m remaining`;
+    return `${mins}m ${secs % 60}s remaining`;
+  } catch (err) {
+    return 'Active Plan';
+  }
+}
+
+// ðŸ›¡ï¸ FULL PRODUCTION AUTOMATED LICENSE SYSTEM (SURVIVES RESTARTS)
 function verifySystemLicense() {
   const currentCode = config.activationCode || '';
 
+  if (currentCode === 'EMMY-PREMIUM-LIFE' || currentCode === 'EMMY-PRO-RENEWAL') {
+    return { valid: true, reason: 'AUTHORIZED' };
+  }
+
   if (currentCode === 'EMMY-EXPIRED') {
-    originalConsoleLog('\n❌ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    originalConsoleLog('🚨 [SYSTEM LOG]: YOUR RUNTIME PLAN HAS EXPIRED!');
+    originalConsoleLog('\nâŒ â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”');
+    originalConsoleLog('ðŸš¨ [SYSTEM LOG]: YOUR RUNTIME PLAN HAS EXPIRED!');
     originalConsoleLog(' STATUS: SHUTTING DOWN ENGINE SAFELY.');
     originalConsoleLog(' ACTION REQUIRED: CONTACT THE MAIN ADMIN FOR A NEW RENEWAL PASS.');
-    originalConsoleLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    originalConsoleLog('â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n');
     return { valid: false, reason: 'EXPIRED' };
   }
 
   if (!validCodes.includes(currentCode)) {
-    originalConsoleLog('\n❌ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    originalConsoleLog('🚨 [SECURITY ALERT]: INVALID OR TAMPERED ACTIVATION KEY!');
+    originalConsoleLog('\nâŒ â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”');
+    originalConsoleLog('ðŸš¨ [SECURITY ALERT]: INVALID OR TAMPERED ACTIVATION KEY!');
     originalConsoleLog(' STATUS: CRITICAL ENGINE BLOCK.');
-    originalConsoleLog(' ACTION REQUIRED: ENTER A VALID BOSS RUNNING CODE.');
-    originalConsoleLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    originalConsoleLog(' ACTION REQUIRED: ENTER A VALID BOSS RUNNING CODE IN CONFIG.JS.');
+    originalConsoleLog('â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n');
     return { valid: false, reason: 'INVALID_TOKEN' };
   }
-
-  const timedCodes = {
-    'EMMY-24HOURS': 24 * 60 * 60 * 1000,
-    'EMMY-7DAYS': 7 * 24 * 60 * 60 * 1000,
-    'EMMY-30DAYS': 30 * 24 * 60 * 60 * 1000
-  };
 
   if (timedCodes[currentCode]) {
     const trackingFile = path.join(__dirname, './utils/expiry_tracker.json');
@@ -134,13 +169,13 @@ function verifySystemLicense() {
     const timeLeft = allowedDuration - timeElapsed;
 
     if (timeLeft <= 0) {
-      originalConsoleLog(`\n❌ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🚨 [SYSTEM LOG]: THE ${currentCode.split('-')[1]} PLAN HAS RUN OUT EXPIRED!\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
+      originalConsoleLog(`\nâŒ â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\nðŸš¨ [SYSTEM LOG]: THE ${currentCode} PLAN HAS RUN OUT EXPIRED!\nâ”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n`);
       return { valid: false, reason: 'EXPIRED' };
     }
     
     const hoursLeft = (timeLeft / (1000 * 60 * 60)).toFixed(1);
     const daysLeft = (timeLeft / (1000 * 60 * 60 * 24)).toFixed(1);
-    originalConsoleLog(`\n⏳ [PLAN ACTIVE]: Plan verified. Running on ${currentCode.split('-')[1]} authorization layer. (${currentCode === 'EMMY-24HOURS' ? hoursLeft + ' Hours' : daysLeft + ' Days'} Remaining)\n`);
+    originalConsoleLog(`\nâ³ [PLAN ACTIVE]: Plan verified. Running on authorization layer. (${allowedDuration <= 8 * 60 * 1000 ? 'Trial' : currentCode.includes('24H') || currentCode.includes('24HOURS') ? hoursLeft + ' Hours' : daysLeft + ' Days'} Remaining)\n`);
   }
 
   return { valid: true, reason: 'AUTHORIZED' };
@@ -166,12 +201,6 @@ const store = {
   }
 };
 
-const baileysStore = makeInMemoryStore({ logger: pino({ level: 'silent' }).child({ level: 'silent', stream: 'store' }) });
-baileysStore.readFromFile('./baileys_store.json');
-setInterval(() => {
-  try { baileysStore.writeToFile('./baileys_store.json'); } catch (e) {}
-}, 10000);
-
 const processedMessages = new Set();
 setInterval(() => processedMessages.clear(), 5 * 60 * 1000);
 
@@ -181,260 +210,35 @@ let globalPairingLock = false;
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const question = (text) => new Promise((resolve) => rl.question(text, resolve));
 
-async function startBot() {
-  const licenseCheck = verifySystemLicense();
-  const sessionFolder = `./${config.sessionName}`;
-  const sessionFile = path.join(sessionFolder, 'creds.json');
+        try { if (require('./utils/autoreact').load().enabled) activeCommandsList += `*â–ªï¸ Auto-Message React:* \`Active âœ…\`\n`; } catch (e) {}
 
-  if (config.sessionID && config.sessionID.startsWith('KnightBot!')) {
-    try {
-      const [header, b64data] = config.sessionID.split('!');
-      const cleanB64 = b64data.replace('...', '');
-      const compressedData = Buffer.from(cleanB64, 'base64');
-      const decompressedData = zlib.gunzipSync(compressedData);
-      if (!fs.existsSync(sessionFolder)) fs.mkdirSync(sessionFolder, { recursive: true });
-      fs.writeFileSync(sessionFile, decompressedData, 'utf8');
-    } catch (e) { console.error('Session error:', e.message); }
-  }
+        if (!activeCommandsList) activeCommandsList = `*â–ªï¸ Base Engine Layer:* \`Set & Running âœ…\`\n`;
 
-  if (!licenseCheck.valid && licenseCheck.reason === 'INVALID_TOKEN') {
-    process.exit(1);
-  }
+        // â±ï¸ Dynamic countdown calculator output injection
+        const liveCountdownString = getRemainingTime(config.activationCode);
 
-  const { state, saveCreds } = await useMultiFileAuthState(sessionFolder);
-  const { version } = await fetchLatestBaileysVersion();
-  
-  const sock = makeWASocket({
-    version,
-    logger: pino({ level: 'silent' }),
-    printQRInTerminal: false, 
-    browser: ['Mac OS', 'Chrome', '124.0.0.0'],
-    auth: state,
-    getMessage: async () => undefined
-  });
-
-  store.bind(sock.ev);
-  baileysStore.bind(sock.ev);
-  sock.store = baileysStore;
-
-  if (!sock.authState.creds.registered && !globalPairingLock) {
-    globalPairingLock = true;
-    await delay(3000);
-    originalConsoleLog(`\n📲 [PAIRING ENGINE]: Preparing deployment handshake...`);
-    
-    let targetPhone = config.ownerNumber[0] ? config.ownerNumber[0].replace(/[^0-9]/g, '') : '';
-    
-    if (!targetPhone) {
-      const inputNumber = await question(`\n👉 Please enter your WhatsApp pairing number:\n> `);
-      targetPhone = inputNumber.replace(/[^0-9]/g, '');
-    }
-
-    if (targetPhone) {
-      try {
-        await delay(2000);
-        let code = await sock.requestPairingCode(targetPhone);
-        code = code?.match(/.{1,4}/g)?.join('-') || code;
-        originalConsoleLog(`\n🔑 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-        originalConsoleLog(`📌 YOUR WHATSAPP PAIRING CODE IS:  👉  ${code.toUpperCase()}  👈`);
-        originalConsoleLog(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
-      } catch (pairingError) {
-        originalConsoleLog(`❌ Pairing registration failed.`, pairingError.message);
-        globalPairingLock = false;
-      }
-    }
-  }
-
-  let lastActivity = Date.now();
-  sock.ev.on('messages.upsert', () => lastActivity = Date.now());
-  const watchdogInterval = setInterval(async () => {
-    if (Date.now() - lastActivity > 30 * 60 * 1000 && sock.ws.readyState === 1) {
-      await sock.end(undefined, undefined, { reason: 'inactive' });
-      clearInterval(watchdogInterval);
-    }
-  }, 5 * 60 * 1000);
-
-  const sendExpiryNotification = async () => {
-    try {
-      const ownerJid = config.ownerNumber[0].endsWith('@s.whatsapp.net') ? config.ownerNumber[0] : `${config.ownerNumber[0]}@s.whatsapp.net`;
-      const cleanAdminNumber = config.adminNumber.replace(/[^0-9]/g, '');
-      
-      const expiredWarningMsg = 
-        `⚠️ *EMMYSMART BOT SYSTEM SUSPENDED* ⚠️\n` +
-        `⊱ ────── {.⋅ 🔒 ⋅.} ────── ⊰\n\n` +
-        `🚨 *Notice:* Your system allocated plan time has ended. The script has entered locked fallback mode.\n\n` +
-        `🛠️ *RENEW PLAN:* \n` +
-        `To restore automated triggers immediately, please purchase a renewal sequence pass from the lead administrator.\n\n` +
-        `👤 *Contact Admin Inbox:* wa.me/${cleanAdminNumber}\n\n` +
-        `_System Protocol: Core Engine Architecture_`;
-
-      await sock.sendMessage(ownerJid, { text: expiredWarningMsg });
-    } catch (err) {}
-  };
-
-  if (!licenseCheck.valid && licenseCheck.reason === 'EXPIRED') {
-    sock.ev.on('connection.update', async (update) => {
-      if (update.connection === 'open') {
-        await sendExpiryNotification();
-        setTimeout(() => { process.exit(1); }, 4000);
-      }
-    });
-    return sock;
-  }
-
-  if (config.activationCode === 'EMMY-RUN-8MIN') {
-    setTimeout(async () => {
-      clearInterval(watchdogInterval);
-      await sendExpiryNotification();
-      try {
-        const configPath = path.join(__dirname, 'config.js');
-        let configContent = fs.readFileSync(configPath, 'utf8');
-        configContent = configContent.replace("activationCode: 'EMMY-RUN-8MIN'", "activationCode: 'EMMY-EXPIRED'");
-        fs.writeFileSync(configPath, configContent, 'utf8');
-      } catch (e) {}
-      setTimeout(() => { process.exit(1); }, 4000);
-    }, 8 * 60 * 1000); 
-  }
-
-  const activeCodeStr = config.activationCode || '';
-  if (['EMMY-24HOURS', 'EMMY-7DAYS', 'EMMY-30DAYS'].includes(activeCodeStr)) {
-    const limitsMap = { 'EMMY-24HOURS': 24*60*60*1000, 'EMMY-7DAYS': 7*24*60*60*1000, 'EMMY-30DAYS': 30*24*60*60*1000 };
-    
-    const livePlanInterval = setInterval(async () => {
-      const trackingFile = path.join(__dirname, './utils/expiry_tracker.json');
-      if (fs.existsSync(trackingFile)) {
-        try {
-          const trackerData = JSON.parse(fs.readFileSync(trackingFile, 'utf8'));
-          const maxAllowed = limitsMap[activeCodeStr];
-          if (Date.now() - trackerData.activatedAt >= maxAllowed) {
-            clearInterval(livePlanInterval);
-            clearInterval(watchdogInterval);
-            await sendExpiryNotification();
-            try {
-              const configPath = path.join(__dirname, 'config.js');
-              let configContent = fs.readFileSync(configPath, 'utf8');
-              configContent = configContent.replace(`activationCode: '${activeCodeStr}'`, "activationCode: 'EMMY-EXPIRED'");
-              fs.writeFileSync(configPath, configContent, 'utf8');
-            } catch (e) {}
-            setTimeout(() => { process.exit(1); }, 4000);
-          }
-        } catch (err) {}
-      }
-    }, 60 * 60 * 1000);
-  }
-
-  // --- CONNECTION MANAGEMENT ---
-  sock.ev.on('connection.update', async (update) => {
-    const { connection, lastDisconnect } = update;
-
-    if (connection === 'close') {
-      const statusCode = lastDisconnect?.error?.output?.statusCode;
-      const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
-      
-      if (statusCode === 401 || statusCode === 411 || lastDisconnect?.error?.message?.includes('bad mac')) {
-        globalPairingLock = false;
-        try { if (fs.existsSync(sessionFile)) fs.unlinkSync(sessionFile); } catch (e) {}
-        setTimeout(() => startBot(), 5000);
-        return;
-      }
-
-      if (shouldReconnect) {
-        setTimeout(() => startBot(), 10000);
-      }
-    } else if (connection === 'open') {
-      globalPairingLock = false; 
-      console.log('\n✅ System Handshake Complete! Dashboard Synchronized.');
-      
-      try {
-        await sock.newsletterFollow("120363410039942242@newsletter");
-      } catch (err) {}
-
-      if (config.autoBio) await sock.updateProfileStatus(`${config.botName} | Active 24/7`);
-
-      try {
-        const ownerJid = config.ownerNumber[0].endsWith('@s.whatsapp.net') ? config.ownerNumber[0] : `${config.ownerNumber[0]}@s.whatsapp.net`;
-        
-        let commandCount = 0;
-        const commandsPath = path.join(__dirname, 'commands');
-        if (fs.existsSync(commandsPath)) {
-          const folders = fs.readdirSync(commandsPath);
-          for (const folder of folders) {
-            const fullPath = path.join(commandsPath, folder);
-            if (fs.statSync(fullPath).isDirectory()) {
-              commandCount += fs.readdirSync(fullPath).filter(file => file.endsWith('.js')).length;
-            } else if (folder.endsWith('.js')) {
-              commandCount++;
-            }
-          }
-        }
-
-        let activeCommandsList = '';
-        try { if (antidelete.load().enabled || antidelete.load().statusEnabled) activeCommandsList += `*▪️ Anti-Delete Protection:* \`Active ✅\`\n`; } catch (e) {}
-        try { if (require('./utils/statusview').load().enabled) activeCommandsList += `*▪️ Auto-Status Viewer:* \`Active ✅\`\n`; } catch (e) {}
-        try { if (require('./utils/statusreact').load().enabled) activeCommandsList += `*▪️ Auto-Status React (🥰):* \`Active ✅\`\n`; } catch (e) {}
-        try { if (contactsUtil.load().autoSaveContacts) activeCommandsList += `*▪️ Contact Auto-Saver:* \`Active ✅\`\n`; } catch (e) {}
-        try { if (require('./utils/autoreact').load().enabled) activeCommandsList += `*▪️ Auto-Message React:* \`Active ✅\`\n`; } catch (e) {}
-
-        if (!activeCommandsList) activeCommandsList = `*▪️ Base Engine Layer:* \`Set & Running ✅\`\n`;
-
-        const humanReadableTiers = {
-          'EMMY-RUN-8MIN': '8 Minutes Trial Plan',
-          'EMMY-24HOURS': '24 Hours Premium Ticket',
-          'EMMY-7DAYS': '7 Days Weekly Premium',
-          'EMMY-30DAYS': '30 Days Monthly Pass',
-          'EMMY-PREMIUM-LIFE': 'Unlimited Premium Lifetime Allocation'
-        };
-
-        const currentTierDisplay = humanReadableTiers[config.activationCode] || 'Standard Operational License';
-
+        // ðŸ“Š Integrated Countdown Dashboard layout (Keycheck ID wiped safely)
         const connectMsg = 
-          `✨ *RENEWAL SUCCESSFUL!* ✨\n` +
-          `⊱ ────── {.⋅ 🛡️ ⋅.} ────── ⊰\n\n` +
-          `🤖 *System Status:* Secure & Fully Authorized.\n\n` +
-          `📊 *SERVER PLAN REAL-TIME DASHBOARD*\n` +
-          `📡 *Engine Status:* Active 🚀\n` +
-          `⏱️ *Current Plan:* ${currentTierDisplay}\n` +
-          `🗂️ *Active Modules:* \`[ ${commandCount > 0 ? commandCount : 1} Set & Running ]\`\n` +
-          `🔰 *Core Prefix:* \`[ ${config.prefix} ]\`\n` +
-          `📱 *Connected Line:* +${sock.user.id.split(':')[0]}\n\n` +
-          `🛡️ *MONITORED FEATURES*\n` +
+          `âœ¨ *BOT REBOOT SUCCESSFUL!* âœ¨\n` +
+          `âŠ± â”€â”€â”€â”€â”€â”€ {.â‹… ðŸ›¡ï¸ â‹….} â”€â”€â”€â”€â”€â”€ âŠ°\n\n` +
+          `ðŸ¤– *System Status:* Secure & Fully Authorized.\n\n` +
+          `ðŸ“Š *SERVER PLAN REAL-TIME DASHBOARD*\n` +
+          `ðŸ“¡ *Engine Status:* Active ðŸš€\n` +
+          `â±ï¸ *Validity Left:* \`[ ${liveCountdownString} ]\`\n` +
+          `ðŸ—‚ï¸ *Active Modules:* \`[ ${commandCount > 0 ? commandCount : 1} Set & Running ]\`\n` +
+          `ðŸ”° *Core Prefix:* \`[ ${config.prefix} ]\`\n` +
+          `ðŸ“± *Connected Line:* +${sock.user.id.split(':')[0]}\n\n` +
+          `ðŸ›¡ï¸ *MONITORED FEATURES*\n` +
           `${activeCommandsList}\n` +
-          `⊱ ────── {⋆❉⋆} ────── ⊰\n` +
-          `💻 *Type \`${config.prefix}menu\` inside your chat layout to see system operations.*\n\n` +
+          `âŠ± â”€â”€â”€â”€â”€â”€ {â‹†â‰â‹†} â”€â”€â”€â”€â”€â”€ âŠ°\n\n` +
           `_Powered by Emmysmart Global Core vA1_`;
-
+        
         await sock.sendMessage(ownerJid, { text: connectMsg });
-
-        // 📚 ALERTER 1: LOCAL JSON CONTACT CACHE CHECK
-        setTimeout(async () => {
-          try {
-            const cachedCount = Object.keys(baileysStore.contacts || {}).length;
-            if (cachedCount > 1) {
-              await sock.sendMessage(ownerJid, { 
-                text: `📚 *CONTACT BOOK DATABASE ONLINE!*\n\n✅ Memory engine successfully loaded *${cachedCount}* verified contacts from local cache (\`baileys_store.json\`). HD Status operations are primed and ready!` 
-              });
-              global.contactsNotified = true;
-            }
-          } catch (e) {}
-        }, 6000);
-
       } catch (err) {}
     }
   });
-    
-    sock.ev.on('creds.update', saveCreds);
 
-  // 📡 ALERTER 2: LIVE STREAM PHONEBOOK HANDSHAKE COMPLETE
-  sock.ev.on('messaging-history.set', async ({ contacts }) => {
-    if (!global.contactsNotified && contacts && contacts.length > 0) {
-      global.contactsNotified = true;
-      try {
-        const ownerJid = config.ownerNumber[0].endsWith('@s.whatsapp.net') ? config.ownerNumber[0] : `${config.ownerNumber[0]}@s.whatsapp.net`;
-        await sock.sendMessage(ownerJid, {
-          text: `📡 *CONTACT BOOK SYNCHRONIZATION COMPLETE!*\n\n✅ Successfully pulled and structural-mapped *${contacts.length}* active phone contacts directly from your phone stream. HD status modules are armed!`
-        });
-      } catch (err) {}
-    }
-  });
+  sock.ev.on('creds.update', saveCreds);
 
   const isSystemJid = (jid) => jid.includes('@broadcast') || jid.includes('status.broadcast') || jid.includes('@newsletter');
 
@@ -450,11 +254,11 @@ async function startBot() {
       if (contactDb.autoSaveContacts && msg.pushName && !msg.key.fromMe && !from.endsWith('@g.us') && !isSystemJid(from)) {
         try {
           const cleanNumber = from.split('@')[0];
-          const taggedName = `${msg.pushName} 🤔`; 
+          const taggedName = `${msg.pushName} ðŸ¤–`; 
           await sock.updateContactName(from, taggedName);
           const vcard = 'BEGIN:VCARD\nVERSION:3.0\n' + `FN:${taggedName}\n` + `TEL;type=CELL;type=VOICE;waid=${cleanNumber}:+${cleanNumber}\n` + 'END:VCARD';
           await sock.sendMessage(myJid, { contacts: { displayName: taggedName, contacts: [{ vcard }] } }, { ephemeralExpiration: 60 }); 
-          await sock.sendMessage(myJid, { text: `👤✅ *Contact Auto-Saved!*\n\n*Name:* ${taggedName}\n*Number:* +${cleanNumber}` });
+          await sock.sendMessage(myJid, { text: `ðŸ‘¤âœ… *Contact Auto-Saved!*\n\n*Name:* ${taggedName}\n*Number:* +${cleanNumber}` });
         } catch (err) {}
       }
 
@@ -496,8 +300,8 @@ async function startBot() {
                 const senderName = savedMsg.pushName || 'Unknown User';
                 const formattedTime = new Date(savedMsg.messageTimestamp * 1000).toLocaleTimeString();
 
-                let targetAlert = `━━━━━ 🚨 *DELETED ${isStatusDeletion ? 'STATUS' : 'MESSAGE'}* 🚨 ━━━━━\n\n`;
-                targetAlert += `👤 *Sender:* ${senderName}\n🆔 *Number:* +${senderJid.split(':')[0]}\n🕒 *Time:* ${formattedTime}\n\n📝 *Content:* ${messageContent}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+                let targetAlert = `â”â”â”â”â” ðŸš¨ *DELETED ${isStatusDeletion ? 'STATUS' : 'MESSAGE'}* ðŸš¨ â”â”â”â”â”\n\n`;
+                targetAlert += `ðŸ‘¤ *Sender:* ${senderName}\nðŸ†” *Number:* +${senderJid.split(':')[0]}\nâ° *Time:* ${formattedTime}\n\nðŸ“ *Content:* ${messageContent}\nâ”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”`;
                 await sock.sendMessage(myJid, { text: targetAlert });
                 if (rawMsg.imageMessage || rawMsg.videoMessage || rawMsg.audioMessage || rawMsg.documentMessage) {
                   await sock.sendMessage(myJid, { forward: savedMsg });
@@ -517,7 +321,7 @@ async function startBot() {
           const statusreact = require('./utils/statusreact');
           if (statusview.load().enabled) await sock.readMessages([msg.key]);
           if (statusreact.load().enabled) {
-            await sock.sendMessage('status@broadcast', { react: { text: '🥰', key: msg.key } }, { statusJidList: [msg.key.participant] });
+            await sock.sendMessage('status@broadcast', { react: { text: 'ðŸ¥°', key: msg.key } }, { statusJidList: [msg.key.participant] });
           }
         } catch (err) {}
         continue;
@@ -525,7 +329,7 @@ async function startBot() {
 
       const ardb = autoreact.load();
       if (ardb.enabled && !msg.key.fromMe) {
-        try { await sock.sendMessage(from, { react: { text: '❤️', key: msg.key } }); } catch (err) {}
+        try { await sock.sendMessage(from, { react: { text: 'â¤ï¸', key: msg.key } }); } catch (err) {}
       }
 
       if (isSystemJid(from) || processedMessages.has(msg.key.id)) continue;
