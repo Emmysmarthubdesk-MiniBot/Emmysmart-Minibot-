@@ -17,7 +17,7 @@ module.exports = {
     sessionName: 'session',
     sessionID: process.env.SESSION_ID || '',
     newsletterJid: '120363410039942242@newsletter', // Newsletter JID for menu forwarding
-    updateZipUrl: 'https://github.com/mruniquehacker/KnightBot-Mini/archive/refs/heads/main.zip', // URL to latest code zip for .update command
+    updateZipUrl: 'https://github.com/Emmysmarthubdesk-MiniBot/Emmysmart-Minibot-/archive/refs/heads/main.zip', // URL to latest code zip for .update command
     
     // Sticker Configuration
     packname: 'Emmysmart Bot Mini',
@@ -84,7 +84,7 @@ module.exports = {
     
     // Social Links (optional)
     social: {
-        github: 'https://github.com/Emmysmart365',
+        github: 'https://github.com/Emmysmarthubdesk-MiniBot',
         whatsapp: 'https://wa.me/message/GUUF5WRX6P2LN1',
         channel: 'https://whatsapp.com/channel/0029Vb7YdxUCnA7v7rZEFl12'
     }
