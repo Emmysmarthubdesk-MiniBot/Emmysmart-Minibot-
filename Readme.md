@@ -6,8 +6,8 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-<img src="./utils/bot_image.jpg" alt="Emmysmart Mini Bot" width="260">
-
+<div align="center">
+  <img src="https://i.postimg.cc/2jP5TKQ1/PSX-20260617-153251.jpg" alt="Emmysmart Mini Bot" width="260" style="border-radius: 15px;">
 </div>
 
 Emmysmart Mini Bot is a highly optimized, multi-device (MD) WhatsApp automation engine built on top of the **Baileys** library. 
