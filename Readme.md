@@ -81,7 +81,7 @@ git clone [https://github.com/your-username/Emmysmart-Mini-Bot.git](https://gith
 cd Emmysmart-Mini-Bot
 
 ### 2️⃣ Populate project dependencies
-Bash
+```bash
 npm install
 
 3️⃣ Run the application
