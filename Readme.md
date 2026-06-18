@@ -76,38 +76,46 @@ For a full contextual walkthrough regarding panel variables and deployment confi
 ## 🛠 Local Setup
 
 ### 1️⃣ Clone the workspace files
-```bash
-git clone [https://github.com/your-username/Emmysmart-Mini-Bot.git](https://github.com/your-username/Emmysmart-Mini-Bot.git)
-cd Emmysmart-Mini-Bot
+`bash`
+`git clone [https://github.com/your-username/Emmysmart-Mini-Bot.git](https://github.com/your-username/Emmysmart-Mini-Bot.git)`
+`cd Emmysmart-Mini-Bot`
 
 ### 2️⃣ Populate project dependencies
-```bash
-npm install
+`bash`
+`npm install`
 
-3️⃣ Run the application
-Bash
-node index.js
+### 3️⃣ Run the application
+`bash`
+`node index.js`
 
-4️⃣ Authenticate via Phone Pairing Code
-When the app executes inside your console:
-
+### 4️⃣ Authenticate via Phone Pairing Code
+> **When the app executes inside your console:**
+> 
 The terminal instance will prompt you to type in your connected WhatsApp account phone number (with international country code prefix).
 
 The terminal will generate a unique 8-character Pairing Code / Password.
 
 Open WhatsApp on your device, navigate to Linked Devices -> Link with Phone Number, and input the terminal generated string to link your account securely.
 
-🙏 Credits
+## 🙏 Credits
+<div align="center">
+  
 Emmysmart Hub – Principal System Architect & Lead Bot Developer
 
 Baileys – Multi-Device WhatsApp Web API library Engine (@whiskeysockets/baileys)
 
 Additional external libraries found inside package.json
 
-📢 Mandatory Attribution Notice
+## 📢 Mandatory Attribution Notice
+
+<div align="center">
+  
 ⚠️ IMPORTANT: This project is fully open-source, but proper credit must be given to the original owner. If you use, modify, fork, or rebrand this codebase for your own bot distribution, you MUST retain the original developer credits pointing to Emmysmart Hub inside your repository, video descriptions, and bot menus. Removing author tags without permission is strictly prohibited.
 
-⚠️ Important Warning
+## ⚠️ Important Warning
+
+<div align="center">
+  
 1 This automation tool is engineered strictly for utility and educational implementations.
 
 2 This tool is not an authorized or official product of WhatsApp Inc.
@@ -116,7 +124,10 @@ Additional external libraries found inside package.json
 
 4 You initialize this software entirely at your own risk. The developers hold zero responsibility or liability for messaging restrictions, configuration errors, or data blocks encountered during runtime.
 
-📄 License (MIT)
+## 📄 License (MIT)
+
+<div align="center">
+  
 This automation project is licensed under the MIT License.
 
 You must:
@@ -127,7 +138,7 @@ You must:
 
 • Avoid using this code to operate heavy communication loops, malicious text schemes, or server spam behaviors.
 
-📜 Copyright Notice
+### 📜 Copyright Notice
 Copyright (c) 2026 Emmysmart Hub.
 
 All rights reserved.
