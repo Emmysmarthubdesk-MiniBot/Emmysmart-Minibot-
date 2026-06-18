@@ -1,30 +1,29 @@
 <div align="center">
 
-## Knight Bot Mini
+## Emmysmart Mini Bot
 
 [![Made with Baileys](https://img.shields.io/badge/Made%20with-Baileys-00bcd4?style=for-the-badge)](https://github.com/WhiskeySockets/Baileys)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-<img src="utils/bot_image.jpg" alt="Knight Bot Mini" width="260">
+<img src="utils/bot_image.jpg" alt="Emmysmart Mini Bot" width="260">
 
 </div>
 
-Knight Bot Mini is a WhatsApp MD bot built on top of the **Baileys** library.  
-It’s designed to be fast, lightweight, and easy to customize without touching the core code.  
-This project is **fully open source** — you can modify it, rebrand it, and make your **own bot** from this codebase **free of cost**, without needing any permission from our side.  
-All commands and the overall structure are written in a way that makes customization (bot image, prefix, name, features, etc.) as easy as possible.
+Emmysmart Mini Bot is a highly optimized, multi-device (MD) WhatsApp automation engine built on top of the **Baileys** library. 
+
+Developed by **Emmysmart Hub**, this project features a lightweight, zero-lag modular handler system, making it incredibly easy to customize variables via `config.js` without altering primary execution threads.
 
 ---
 
-
 ## ✨ Features
 
-- **Fully Open Source** – entire codebase is editable; host it anywhere (Heroku, panel, VPS, etc.).  
-- **Easy Customization via Commands** – change **bot image**, **prefix**, **channel/newsletter**, **bot name**, etc. with simple commands.  
-- **Modular Command System** – commands are organized in the `commands` folder for easy editing.  
-- **Optimized for Stability** – RAM‑optimized media handling (streaming, temp cleanup), better session handling via `sessionID` in `config.js`.  
-- **Owner Utilities** – restart, update from ZIP, and more owner‑only tools.
+- **A1 Formula Engine** – Runs Anti-Delete, Auto-Status, and Auto-React simultaneously without any feature interference.
+- **Shazam Music Search** – Identifies song titles, artists, and album artwork directly from audio clips or voice notes.
+- **Multi-Platform Downloader** – Downloads clean videos from TikTok (no watermark), Instagram Reels, and Facebook.
+- **Public/Private Modes** – Instantly switch bot accessibility between public use and owner-only restriction.
+- **Modular Command System** – Structured code architecture via clean handlers for effortless customization.
+- **Storage Optimization** – Automated background cache clearing and temporary media file trimming to save disk space.
 
 ---
 
@@ -32,46 +31,28 @@ All commands and the overall structure are written in a way that makes customiza
 
 <div align="center">
 
-<a href="https://github.com/mruniquehacker/Knightbot-Mini/fork" target="_blank">
+<a href="https://github.com/your-username/Emmysmart-Mini-Bot/fork" target="_blank">
   <img src="https://img.shields.io/badge/Fork%20Repository-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="Fork on GitHub">
 </a>
 
 </div>
 
-> This creates your own copy of `Knightbot-Mini` under your GitHub account.
+> This copies the repository source files over to your personal GitHub account for staging.
 
 ---
 
-### 2. Get Pair Code
+### 2. Choose Your Deployment Panel
 
-Deploy a small helper to generate a **pair code** and obtain your session string.
-
+#### Option A: Deploy on Pterodactyl Panel (Recommended)
 <div align="center">
 
-<a href="https://knight-bot-paircode.onrender.com/" target="_blank">
-  <img src="https://img.shields.io/badge/Generate-Pair%20Code-blueviolet?style=for-the-badge" alt="Generate Pair Code">
+<a href="YOUR_PTERODACTYL_PANEL_URL_HERE" target="_blank">
+  <img src="https://img.shields.io/badge/Deploy%20on-Pterodactyl-blue?style=for-the-badge&logo=pterodactyl&logoColor=white" alt="Deploy on Pterodactyl">
 </a>
 
 </div>
 
-After scanning, you will receive a **session string** starting with:
-
-```text
-KnightBot!H4....
-```
-
-Copy that full string and paste it into `config.js`:
-
-```js
-sessionID: 'KnightBot!H4.....'
-```
-
-Or set it via the `SESSION_ID` environment variable when hosting.
-
----
-
-### 3. Deploy on Panel (Katabump, etc.)
-
+#### Option B: Deploy on Katabump
 <div align="center">
 
 <a href="https://dashboard.katabump.com/auth/login#d6b7d6" target="_blank">
@@ -80,7 +61,9 @@ Or set it via the `SESSION_ID` environment variable when hosting.
 
 </div>
 
-For a full step‑by‑step deployment tutorial (panels / VPS / Heroku), add or update your YouTube guide here:
+> **💡 Connection Step:** Once your server node spins up on your dashboard panel, open your startup console. The script will safely prompt you to insert your WhatsApp phone number to establish a link via a unique pairing code or authorization password.
+
+For a full contextual walkthrough regarding panel variables and deployment configurations, check out the video guide below:
 
 <div align="center">
   <a href="https://youtu.be/4PQcn-qqrcE">
@@ -92,136 +75,59 @@ For a full step‑by‑step deployment tutorial (panels / VPS / Heroku), add or 
 
 ## 🛠 Local Setup
 
-### 1️⃣ Clone the repository
-
+### 1️⃣ Clone the workspace files
 ```bash
-git clone https://github.com/mruniquehacker/Knightbot-Mini.git
-cd Knightbot-Mini
-```
+git clone [https://github.com/your-username/Emmysmart-Mini-Bot.git](https://github.com/your-username/Emmysmart-Mini-Bot.git)
+cd Emmysmart-Mini-Bot
 
-### 2️⃣ Install dependencies
-
-```bash
+2️⃣ Populate project dependencies
+Bash
 npm install
-```
 
-### 3️⃣ Configure session
-
-Edit `config.js`:
-
-- **Option A: Use session string**
-
-  ```js
-  sessionID: 'KnightBot!H4.....'
-  ```
-
-- **Option B: Scan QR**
-
-  ```js
-  sessionID: ''
-  ```
-
-  Run the bot and scan the QR from the terminal.
-
-### 4️⃣ Run the bot
-
-```bash
+3️⃣ Run the application
+Bash
 node index.js
-```
 
-When the bot starts:
+4️⃣ Authenticate via Phone Pairing Code
+When the app executes inside your console:
 
-- If `sessionID` is empty, a **QR code** will appear in the terminal – scan it using **Linked Devices** in WhatsApp.  
-- If `sessionID` is set, it will log in using that session string.
+The terminal instance will prompt you to type in your connected WhatsApp account phone number (with international country code prefix).
 
----
+The terminal will generate a unique 8-character Pairing Code / Password.
 
-## 🌐 Community
+Open WhatsApp on your device, navigate to Linked Devices -> Link with Phone Number, and input the terminal generated string to link your account securely.
 
-<div align="center">
+🙏 Credits
+Emmysmart Hub – Principal System Architect & Lead Bot Developer
 
-<a href="https://t.me/+3QhFUZHx-nhhZmY1" target="_blank">
-  <img src="https://img.shields.io/badge/Join-Telegram-0088cc?style=for-the-badge&logo=telegram&logoColor=white" alt="Join Telegram">
-</a>
+Baileys – Multi-Device WhatsApp Web API library Engine (@whiskeysockets/baileys)
 
-<a href="https://whatsapp.com/channel/0029Va90zAnIHphOuO8Msp3A" target="_blank">
-  <img src="https://img.shields.io/badge/Join-WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="Join WhatsApp Channel">
-</a>
+Additional external libraries found inside package.json
 
-</div>
+📢 Mandatory Attribution Notice
+⚠️ IMPORTANT: This project is fully open-source, but proper credit must be given to the original owner. If you use, modify, fork, or rebrand this codebase for your own bot distribution, you MUST retain the original developer credits pointing to Emmysmart Hub inside your repository, video descriptions, and bot menus. Removing author tags without permission is strictly prohibited.
 
----
+⚠️ Important Warning
+1 This automation tool is engineered strictly for utility and educational implementations.
 
-## 🙏 Credits
+2 This tool is not an authorized or official product of WhatsApp Inc.
 
-- **Mr Unique Hacker** – Main developer & maintainer  
-- **Baileys** – WhatsApp Web API library (`@whiskeysockets/baileys`)  
-- Other open‑source libraries listed in `package.json`
+3 Operating unofficial client scripts can conflict with WhatsApp’s Acceptable Use Policies and can introduce risks of service limitations or profile suspension.
 
----
+4 You initialize this software entirely at your own risk. The developers hold zero responsibility or liability for messaging restrictions, configuration errors, or data blocks encountered during runtime.
 
-## ☕ Support Me
-
-<div align="center">
-
-<a href="https://buymeacoffee.com/mruniquehacker" target="_blank">
-  <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20Developer-FF813F?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white" alt="Buy Me a Coffee">
-</a>
-
-</div>
-
-If you find this project helpful and want to support the developer, consider buying me a coffee! Your support helps maintain and improve this open-source project.
-
-<div align="center">
-
-<img src="utils/bmc_qr.png" alt="Buy Me a Coffee QR Code" width="200">
-
-</div>
-
----
-
-
-## ⚠️ Important Warning
-
-- This bot is created **for educational purposes only**.  
-- This is **NOT** an official WhatsApp bot.  
-- Using third‑party bots **may violate WhatsApp’s Terms of Service** and can lead to your account being **banned**.
-
-> You use this bot **at your own risk**.  
-> The developers are **not responsible** for any bans, issues, or damages resulting from its use.
-
----
-
-## 📝 Legal
-
-- This project is **not affiliated with, authorized, maintained, sponsored, or endorsed** by WhatsApp Inc. or any of its affiliates or subsidiaries.  
-- This is **independent and unofficial software**.  
-- **Do not spam** people using this bot.  
-- **Do not** use this bot for bulk messaging, harassment, or any **illegal activities**.  
-- The developers assume **no liability** and are **not responsible** for any misuse or damage caused by this program.
-
----
-
-## 📄 License (MIT)
-
-This project is licensed under the **MIT License**.
+📄 License (MIT)
+This automation project is licensed under the MIT License.
 
 You must:
 
-- Use this software in compliance with **all applicable laws and regulations**.  
-- Keep the **original license and copyright** notices.  
-- **Credit the original authors**.  
-- **Not** use this for spam, abuse, or malicious purposes.
+• Manage this codebase in strict compliance with your local communication regulations.
 
----
+• Retain clear author recognition references and licensing layouts across distributed versions.
 
-## 📜 Copyright Notice
+• Avoid using this code to operate heavy communication loops, malicious text schemes, or server spam behaviors.
 
-Copyright (c) **2026 Professor**.  
+📜 Copyright Notice
+Copyright (c) 2026 Emmysmart Hub.
+
 All rights reserved.
-
-This project contains code from various open‑source projects and AI tools, including but not limited to:
-
-- **Baileys** – MIT License  
-- Other libraries as listed in `package.json`
-
