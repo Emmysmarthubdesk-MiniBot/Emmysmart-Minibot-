@@ -80,7 +80,7 @@ For a full contextual walkthrough regarding panel variables and deployment confi
 git clone [https://github.com/your-username/Emmysmart-Mini-Bot.git](https://github.com/your-username/Emmysmart-Mini-Bot.git)
 cd Emmysmart-Mini-Bot
 
-2️⃣ Populate project dependencies
+### 2️⃣ Populate project dependencies
 Bash
 npm install
 
