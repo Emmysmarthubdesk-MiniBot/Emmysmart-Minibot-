@@ -54,7 +54,7 @@ function cleanupPuppeteerCache() {
   } catch (err) {}
 }
 
-// ðŸ•’ DYNAMIC DATE MATH HANDLING - ALL 15+ RECOVERY CODES FULLY PRESERVED
+// ⏰ DYNAMIC DATE MATH HANDLING - ALL 15+ RECOVERY CODES FULLY PRESERVED
 const timedCodes = {
   // Original System Layout Codes
   'EMMY-RUN-8MIN': 8 * 60 * 1000,
@@ -86,10 +86,10 @@ const timedCodes = {
 
 const validCodes = [...Object.keys(timedCodes), 'EMMY-PREMIUM-LIFE', 'EMMY-PRO-RENEWAL'];
 
-// â±ï¸ Dynamic Dashboard Countdown Calculator Tool
+// ⏱️ Dynamic Dashboard Countdown Calculator Tool
 function getRemainingTime(code) {
-  if (code === 'EMMY-PREMIUM-LIFE' || code === 'EMMY-PRO-RENEWAL') return 'Lifetime Unlimited â™¾ï¸';
-  if (code === 'EMMY-EXPIRED') return 'Expired Plan Interval ðŸš¨';
+  if (code === 'EMMY-PREMIUM-LIFE' || code === 'EMMY-PRO-RENEWAL') return 'Lifetime Unlimited ♾️';
+  if (code === 'EMMY-EXPIRED') return 'Expired Plan Interval 🚨';
   if (!timedCodes[code]) return 'Standard Operational Layer';
 
   const trackingFile = path.join(__dirname, './utils/expiry_tracker.json');
@@ -103,7 +103,7 @@ function getRemainingTime(code) {
     const elapsed = Date.now() - trackerData.activatedAt;
     const remaining = allowedDuration - elapsed;
 
-    if (remaining <= 0) return 'Expired Plan Interval ðŸš¨';
+    if (remaining <= 0) return 'Expired Plan Interval 🚨';
 
     const secs = Math.floor(remaining / 1000);
     const mins = Math.floor(secs / 60);
@@ -118,7 +118,7 @@ function getRemainingTime(code) {
   }
 }
 
-// ðŸ›¡ï¸ FULL PRODUCTION AUTOMATED LICENSE SYSTEM (SURVIVES RESTARTS)
+// 🛡️ FULL PRODUCTION AUTOMATED LICENSE SYSTEM (SURVIVES RESTARTS)
 function verifySystemLicense() {
   const currentCode = config.activationCode || '';
 
@@ -127,20 +127,20 @@ function verifySystemLicense() {
   }
 
   if (currentCode === 'EMMY-EXPIRED') {
-    originalConsoleLog('\nâŒ â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”');
-    originalConsoleLog('ðŸš¨ [SYSTEM LOG]: YOUR RUNTIME PLAN HAS EXPIRED!');
+    originalConsoleLog('\n❌ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    originalConsoleLog('🚨 [SYSTEM LOG]: YOUR RUNTIME PLAN HAS EXPIRED!');
     originalConsoleLog(' STATUS: SHUTTING DOWN ENGINE SAFELY.');
     originalConsoleLog(' ACTION REQUIRED: CONTACT THE MAIN ADMIN FOR A NEW RENEWAL PASS.');
-    originalConsoleLog('â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n');
+    originalConsoleLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     return { valid: false, reason: 'EXPIRED' };
   }
 
   if (!validCodes.includes(currentCode)) {
-    originalConsoleLog('\nâŒ â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”');
-    originalConsoleLog('ðŸš¨ [SECURITY ALERT]: INVALID OR TAMPERED ACTIVATION KEY!');
+    originalConsoleLog('\n❌ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    originalConsoleLog('🚨 [SECURITY ALERT]: INVALID OR TAMPERED ACTIVATION KEY!');
     originalConsoleLog(' STATUS: CRITICAL ENGINE BLOCK.');
     originalConsoleLog(' ACTION REQUIRED: ENTER A VALID BOSS RUNNING CODE IN CONFIG.JS.');
-    originalConsoleLog('â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n');
+    originalConsoleLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     return { valid: false, reason: 'INVALID_TOKEN' };
   }
 
@@ -169,13 +169,13 @@ function verifySystemLicense() {
     const timeLeft = allowedDuration - timeElapsed;
 
     if (timeLeft <= 0) {
-      originalConsoleLog(`\nâŒ â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\nðŸš¨ [SYSTEM LOG]: THE ${currentCode} PLAN HAS RUN OUT EXPIRED!\nâ”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n`);
+      originalConsoleLog(`\n❌ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🚨 [SYSTEM LOG]: THE ${currentCode} PLAN HAS RUN OUT EXPIRED!\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
       return { valid: false, reason: 'EXPIRED' };
     }
     
     const hoursLeft = (timeLeft / (1000 * 60 * 60)).toFixed(1);
     const daysLeft = (timeLeft / (1000 * 60 * 60 * 24)).toFixed(1);
-    originalConsoleLog(`\nâ³ [PLAN ACTIVE]: Plan verified. Running on authorization layer. (${allowedDuration <= 8 * 60 * 1000 ? 'Trial' : currentCode.includes('24H') || currentCode.includes('24HOURS') ? hoursLeft + ' Hours' : daysLeft + ' Days'} Remaining)\n`);
+    originalConsoleLog(`\n⏳ [PLAN ACTIVE]: Plan verified. Running on authorization layer. (${allowedDuration <= 8 * 60 * 1000 ? 'Trial' : currentCode.includes('24H') || currentCode.includes('24HOURS') ? hoursLeft + ' Hours' : daysLeft + ' Days'} Remaining)\n`);
   }
 
   return { valid: true, reason: 'AUTHORIZED' };
@@ -210,33 +210,90 @@ let globalPairingLock = false;
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const question = (text) => new Promise((resolve) => rl.question(text, resolve));
 
-        try { if (require('./utils/autoreact').load().enabled) activeCommandsList += `*â–ªï¸ Auto-Message React:* \`Active âœ…\`\n`; } catch (e) {}
+/**
+ * WhatsApp MD Bot - Main Entry Point (A1 Formula Architecture - Final Production Multi-Tier License System)
+ * PART 2: Core Socket Core Initializer & Connection System Dashboard
+ */
 
-        if (!activeCommandsList) activeCommandsList = `*â–ªï¸ Base Engine Layer:* \`Set & Running âœ…\`\n`;
+async function startBot() {
+  const license = verifySystemLicense();
+  if (!license.valid) {
+    process.exit(1);
+  }
 
-        // â±ï¸ Dynamic countdown calculator output injection
+  const { state, saveCreds } = await useMultiFileAuthState(path.join(__dirname, './session'));
+  const { version } = await fetchLatestBaileysVersion();
+
+  const sock = makeWASocket({
+    version,
+    log: pino({ level: 'silent' }),
+    auth: state,
+    printQRInTerminal: true,
+    browser: ['Emmysmart Mini Bot', 'Safari', '3.0']
+  });
+
+  store.bind(sock.ev);
+
+  sock.ev.on('connection.update', async (update) => {
+    const { connection, lastDisconnect } = update;
+    if (connection === 'close') {
+      const shouldReconnect = (lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut);
+      originalConsoleLog(`🤖 Connection closed due to: ${lastDisconnect.error}, reconnecting: ${shouldReconnect}`);
+      if (shouldReconnect) startBot().catch(() => process.exit(1));
+    } else if (connection === 'open') {
+      originalConsoleLog('✅ Emmysmart Mini Bot connected successfully to WhatsApp network.');
+      
+      try {
+        const ownerJid = sock.user.id.split(':')[0] + '@s.whatsapp.net';
+        let commandCount = 0;
+        try {
+          const cmdFolder = path.join(__dirname, './commands');
+          if (fs.existsSync(cmdFolder)) {
+            const categories = fs.readdirSync(cmdFolder);
+            for (const cat of categories) {
+              const catPath = path.join(cmdFolder, cat);
+              if (fs.lstatSync(catPath).isDirectory()) {
+                commandCount += fs.readdirSync(catPath).filter(f => f.endsWith('.js')).length;
+              }
+            }
+          }
+        } catch(e) {}
+
+        let activeCommandsList = '';
+        try { if (antidelete.load().enabled) activeCommandsList += `*▪️ Anti-Delete Engine:* \`Active ✅\`\n`; } catch (e) {}
+        try { if (require('./utils/statusview').load().enabled) activeCommandsList += `*▪️ Auto-Status Viewer:* \`Active ✅\`\n`; } catch (e) {}
+        try { if (require('./utils/autoreact').load().enabled) activeCommandsList += `*▪️ Auto-Message React:* \`Active ✅\`\n`; } catch (e) {}
+
+        if (!activeCommandsList) activeCommandsList = `*▪️ Base Engine Layer:* \`Set & Running ✅\`\n`;
+
+        // ⏱️ Dynamic countdown calculator output injection
         const liveCountdownString = getRemainingTime(config.activationCode);
 
-        // ðŸ“Š Integrated Countdown Dashboard layout (Keycheck ID wiped safely)
+        // 📊 Integrated Countdown Dashboard layout (Keycheck ID wiped safely)
         const connectMsg = 
-          `âœ¨ *BOT REBOOT SUCCESSFUL!* âœ¨\n` +
-          `âŠ± â”€â”€â”€â”€â”€â”€ {.â‹… ðŸ›¡ï¸ â‹….} â”€â”€â”€â”€â”€â”€ âŠ°\n\n` +
-          `ðŸ¤– *System Status:* Secure & Fully Authorized.\n\n` +
-          `ðŸ“Š *SERVER PLAN REAL-TIME DASHBOARD*\n` +
-          `ðŸ“¡ *Engine Status:* Active ðŸš€\n` +
-          `â±ï¸ *Validity Left:* \`[ ${liveCountdownString} ]\`\n` +
-          `ðŸ—‚ï¸ *Active Modules:* \`[ ${commandCount > 0 ? commandCount : 1} Set & Running ]\`\n` +
-          `ðŸ”° *Core Prefix:* \`[ ${config.prefix} ]\`\n` +
-          `ðŸ“± *Connected Line:* +${sock.user.id.split(':')[0]}\n\n` +
-          `ðŸ›¡ï¸ *MONITORED FEATURES*\n` +
+          `✨ *BOT REBOOT SUCCESSFUL!* ✨\n` +
+          `━━━ {• 🛡️ •} ━━━\n\n` +
+          `🤖 *System Status:* Secure & Fully Authorized.\n\n` +
+          `📊 *SERVER PLAN REAL-TIME DASHBOARD*\n` +
+          `📡 *Engine Status:* Active 🚀\n` +
+          `⏳ *Validity Left:* \`[ ${liveCountdownString} ]\`\n` +
+          `📁 *Active Modules:* \`[ ${commandCount > 0 ? commandCount : 1} Set & Running ]\`\n` +
+          `💠 *Core Prefix:* \`[ ${config.prefix} ]\`\n` +
+          `📱 *Connected Line:* +${sock.user.id.split(':')[0]}\n\n` +
+          `🛡️ *MONITORED FEATURES*\n` +
           `${activeCommandsList}\n` +
-          `âŠ± â”€â”€â”€â”€â”€â”€ {â‹†â‰â‹†} â”€â”€â”€â”€â”€â”€ âŠ°\n\n` +
+          `━━━ {★❂★} ━━━\n\n` +
           `_Powered by Emmysmart Global Core vA1_`;
         
         await sock.sendMessage(ownerJid, { text: connectMsg });
       } catch (err) {}
     }
   });
+
+/**
+ * WhatsApp MD Bot - Main Entry Point (A1 Formula Architecture - Final Production Multi-Tier License System)
+ * PART 3: Automation Event Interceptors & Initialization Trigger
+ */
 
   sock.ev.on('creds.update', saveCreds);
 
@@ -254,11 +311,11 @@ const question = (text) => new Promise((resolve) => rl.question(text, resolve));
       if (contactDb.autoSaveContacts && msg.pushName && !msg.key.fromMe && !from.endsWith('@g.us') && !isSystemJid(from)) {
         try {
           const cleanNumber = from.split('@')[0];
-          const taggedName = `${msg.pushName} ðŸ¤–`; 
+          const taggedName = `${msg.pushName} 🤖`; 
           await sock.updateContactName(from, taggedName);
           const vcard = 'BEGIN:VCARD\nVERSION:3.0\n' + `FN:${taggedName}\n` + `TEL;type=CELL;type=VOICE;waid=${cleanNumber}:+${cleanNumber}\n` + 'END:VCARD';
           await sock.sendMessage(myJid, { contacts: { displayName: taggedName, contacts: [{ vcard }] } }, { ephemeralExpiration: 60 }); 
-          await sock.sendMessage(myJid, { text: `ðŸ‘¤âœ… *Contact Auto-Saved!*\n\n*Name:* ${taggedName}\n*Number:* +${cleanNumber}` });
+          await sock.sendMessage(myJid, { text: `👤✅ *Contact Auto-Saved!*\n\n*Name:* ${taggedName}\n*Number:* +${cleanNumber}` });
         } catch (err) {}
       }
 
@@ -300,8 +357,8 @@ const question = (text) => new Promise((resolve) => rl.question(text, resolve));
                 const senderName = savedMsg.pushName || 'Unknown User';
                 const formattedTime = new Date(savedMsg.messageTimestamp * 1000).toLocaleTimeString();
 
-                let targetAlert = `â”â”â”â”â” ðŸš¨ *DELETED ${isStatusDeletion ? 'STATUS' : 'MESSAGE'}* ðŸš¨ â”â”â”â”â”\n\n`;
-                targetAlert += `ðŸ‘¤ *Sender:* ${senderName}\nðŸ†” *Number:* +${senderJid.split(':')[0]}\nâ° *Time:* ${formattedTime}\n\nðŸ“ *Content:* ${messageContent}\nâ”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”`;
+                let targetAlert = `━━━━━ 🚨 *DELETED ${isStatusDeletion ? 'STATUS' : 'MESSAGE'}* 🚨 ━━━━━\n\n`;
+                targetAlert += `👤 *Sender:* ${senderName}\n🆔 *Number:* +${senderJid.split(':')[0]}\n🕒 *Time:* ${formattedTime}\n\n📝 *Content:* ${messageContent}\n━━━━━━━━━━━━━━━━━━━━━━━━━━`;
                 await sock.sendMessage(myJid, { text: targetAlert });
                 if (rawMsg.imageMessage || rawMsg.videoMessage || rawMsg.audioMessage || rawMsg.documentMessage) {
                   await sock.sendMessage(myJid, { forward: savedMsg });
@@ -321,7 +378,7 @@ const question = (text) => new Promise((resolve) => rl.question(text, resolve));
           const statusreact = require('./utils/statusreact');
           if (statusview.load().enabled) await sock.readMessages([msg.key]);
           if (statusreact.load().enabled) {
-            await sock.sendMessage('status@broadcast', { react: { text: 'ðŸ¥°', key: msg.key } }, { statusJidList: [msg.key.participant] });
+            await sock.sendMessage('status@broadcast', { react: { text: '🥰', key: msg.key } }, { statusJidList: [msg.key.participant] });
           }
         } catch (err) {}
         continue;
@@ -329,7 +386,7 @@ const question = (text) => new Promise((resolve) => rl.question(text, resolve));
 
       const ardb = autoreact.load();
       if (ardb.enabled && !msg.key.fromMe) {
-        try { await sock.sendMessage(from, { react: { text: 'â¤ï¸', key: msg.key } }); } catch (err) {}
+        try { await sock.sendMessage(from, { react: { text: '❤️', key: msg.key } }); } catch (err) {}
       }
 
       if (isSystemJid(from) || processedMessages.has(msg.key.id)) continue;
