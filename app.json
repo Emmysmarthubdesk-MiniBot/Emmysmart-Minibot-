@@ -1,8 +1,8 @@
 {
-  "name": "Knight Bot MINI",
-  "description": "WhatsApp MD bot (Baileys)",
+  "name": "Emmysmart Mini Bot",
+  "description": "WhatsApp MD bot built with Baileys and vA1 Formula Architecture",
   "repository": "",
-  "keywords": ["whatsapp", "baileys", "bot", "node"],
+  "keywords": ["whatsapp", "baileys", "bot", "node", "emmysmart"],
   "buildpacks": [
     {
       "url": "https://github.com/heroku/heroku-buildpack-nodejs.git"
@@ -10,10 +10,9 @@
   ],
   "env": {
     "SESSION_ID": {
-      "description": "KnightBot session string (e.g. KnightBot!<base64_compressed_data>)",
+      "description": "Emmysmart dynamic base64 session data string structure",
       "required": false,
       "value": ""
     }
   }
 }
-
