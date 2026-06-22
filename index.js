@@ -209,7 +209,6 @@ let globalPairingLock = false;
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const question = (text) => new Promise((resolve) => rl.question(text, resolve));
-
 /**
  * WhatsApp MD Bot - Main Entry Point (A1 Formula Architecture - Final Production Multi-Tier License System)
  * PART 2: Connection Management Loop, Automated Message Listeners, and Live Secure UI Dashboard
@@ -303,11 +302,11 @@ async function startBot() {
 
       // 📇 Automated Bot Admin Contact Card (vCard) Setup
       const adminVcard = 
-        'BEGIN:VCARD\n' +
-        'VERSION:3.0\n' +
-        'FN:Emmysmart Bot Admin 👑\n' +
+        `BEGIN:VCARD\n` +
+        `VERSION:3.0\n` +
+        `FN:Emmysmart Bot Admin 👑\n` +
         `TEL;type=CELL;type=VOICE;waid=${cleanAdminNumber}:+${cleanAdminNumber}\n` +
-        'END:VCARD';
+        `END:VCARD`;
 
       // 📥 Dispatch both the simplified message and the clickable contact card to the owner
       await sock.sendMessage(ownerJid, { text: expiredWarningMsg });
@@ -370,9 +369,8 @@ async function startBot() {
         } catch (err) {}
       }
     }, 60 * 60 * 1000); // Check status hourly
-  }
-
-// --- CONNECTION MANAGEMENT ---
+      }
+  // --- CONNECTION MANAGEMENT ---
   sock.ev.on('connection.update', async (update) => {
     const { connection, lastDisconnect } = update;
 
@@ -438,7 +436,6 @@ async function startBot() {
           `🔰 *Core Prefix:* \`[ ${config.prefix} ]\`\n` +
           `📱 *Connected Line:* +${sock.user.id.split(':')[0]}\n\n` +
           `🛡️ *MONITORED FEATURES*\n` +
-          `${activeCommandsList}\n` +
           `_Powered by Emmysmart Global Core vA1_`;
         
         await sock.sendMessage(ownerJid, { text: connectMsg });
@@ -471,4 +468,89 @@ async function startBot() {
       }
 
       if (msg.message.conversation || msg.message.extendedTextMessage) {
-        const text = msg.message.conversation
+        const text = msg.message.conversation || msg.message.extendedTextMessage.text;
+        if (text && text.startsWith(config.prefix) && !msg.key.fromMe) {
+          await sock.sendPresenceUpdate('composing', from).catch(() => {}); 
+        }
+      }
+
+      const adeb = antidelete.load();
+      if (adeb.enabled || adeb.statusEnabled) {
+        if (!msg.message.protocolMessage && !msg.message.reactionMessage) {
+          antiDeleteStore.set(msg.key.id, msg);
+          setTimeout(() => antiDeleteStore.delete(msg.key.id), 60 * 60 * 1000); 
+        }
+
+        const protocolMsg = msg.message.protocolMessage;
+        if (protocolMsg && protocolMsg.type === 0) {
+          const deletedKey = protocolMsg.key;
+          const isStatusDeletion = deletedKey.remoteJid === 'status@broadcast';
+          if (isStatusDeletion && !adeb.statusEnabled) continue;
+          if (!isStatusDeletion && !adeb.enabled) continue;
+
+          const savedMsg = antiDeleteStore.get(deletedKey.id);
+          if (savedMsg) {
+            try {
+              const senderJid = deletedKey.participant || deletedKey.remoteJid;
+              if (senderJid !== myJid) {
+                let messageContent = '';
+                const rawMsg = savedMsg.message;
+                if (rawMsg.conversation) messageContent = rawMsg.conversation;
+                else if (rawMsg.extendedTextMessage?.text) messageContent = rawMsg.extendedTextMessage.text;
+                else if (rawMsg.imageMessage) messageContent = rawMsg.imageMessage.caption ? `[MEDIA] ${rawMsg.imageMessage.caption}` : '[MEDIA] (Image)';
+                else if (rawMsg.videoMessage) messageContent = rawMsg.videoMessage.caption ? `[MEDIA] ${rawMsg.videoMessage.caption}` : '[MEDIA] (Video)';
+                else if (rawMsg.audioMessage) messageContent = '[MEDIA] (Audio Voice)';
+                else if (rawMsg.documentMessage) messageContent = `[MEDIA] (Document: ${rawMsg.documentMessage.fileName || 'File'})`;
+                
+                const senderName = savedMsg.pushName || 'Unknown User';
+                const formattedTime = new Date(savedMsg.messageTimestamp * 1000).toLocaleTimeString();
+
+                let targetAlert = `━━━━━ 🚨 *DELETED ${isStatusDeletion ? 'STATUS' : 'MESSAGE'}* 🚨 ━━━━━\n\n`;
+                targetAlert += `👤 *Sender:* ${senderName}\n🆔 *Number:* +${senderJid.split(':')[0]}\n⏰ *Time:* ${formattedTime}\n\n📝 *Content:* ${messageContent}\n`;
+                await sock.sendMessage(myJid, { text: targetAlert });
+                if (rawMsg.imageMessage || rawMsg.videoMessage || rawMsg.audioMessage || rawMsg.documentMessage) {
+                  await sock.sendMessage(myJid, { forward: savedMsg });
+                }
+                antiDeleteStore.delete(deletedKey.id);
+              }
+            } catch (err) {}
+          }
+        }
+      }
+
+      if (from === 'status@broadcast') {
+        const sender = msg.key.participant || '';
+        if (msg.key.fromMe || sender.split(':')[0] === sock.user.id.split(':')[0]) continue;
+        try {
+          const statusview = require('./utils/statusview');
+          const statusreact = require('./utils/statusreact');
+          if (statusview.load().enabled) await sock.readMessages([msg.key]);
+          if (statusreact.load().enabled) {
+            await sock.sendMessage('status@broadcast', { react: { text: '🥰', key: msg.key } }, { statusJidList: [msg.key.participant] });
+          }
+        } catch (err) {}
+        continue;
+      }
+
+      const ardb = autoreact.load();
+      if (ardb.enabled && !msg.key.fromMe) {
+        try { await sock.sendMessage(from, { react: { text: '🤖', key: msg.key } }); } catch (err) {}
+      }
+
+      if (isSystemJid(from) || processedMessages.has(msg.key.id)) continue;
+      processedMessages.add(msg.key.id);
+
+      try {
+        if (require('./utils/online').load().enabled) await sock.sendPresenceUpdate('available', from);
+        await handler.handleMessage(sock, msg);
+      } catch (err) {}
+    }
+  });
+
+  return sock;
+}
+
+cleanupPuppeteerCache();
+startBot().catch(err => { process.exit(1); });
+
+module.exports = { store };
