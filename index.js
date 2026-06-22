@@ -291,15 +291,34 @@ async function startBot() {
       const ownerJid = config.ownerNumber[0].endsWith('@s.whatsapp.net') ? config.ownerNumber[0] : `${config.ownerNumber[0]}@s.whatsapp.net`;
       const cleanAdminNumber = config.adminNumber.replace(/[^0-9]/g, '');
       
+      // 📋 Custom Subscription Expiration Text Layer (Simple Everyday Language with Caution Emoji)
       const expiredWarningMsg = 
-        `⚠️ *EMMYSMART BOT SYSTEM SUSPENDED* ⚠️\n` +
-        `🚨 *Notice:* Your system allocated plan time has ended. The script has entered locked fallback mode.\n\n` +
-        `🛠️ *RENEW PLAN:* \n` +
-        `To restore automated triggers immediately, please update the activationCode inside your config.js file. OR contact Bot Admin.\n\n` +
-        `👤 *Contact Admin Inbox:* wa.me/${cleanAdminNumber}\n\n` +
+        `⚠️ *EMMYSMART SYSTEM BROADCAST* ⚠️\n` +
+        
+        `🚨 *Notice:* System subscription renewal failed!\n` +
+        `❌ *Status:* Your subscription has expired.\n\n` +
+        `⚠️ The bot features are currently and temporarily unavailable.\n\n` +
+        `👤 *Action:* Please contact the bot admin to subscribe or renew your plan.\n\n` +
+        `📞 *Direct Link:* wa.me/${cleanAdminNumber}\n\n` +
         `_System Protocol: Core Engine Architecture_`;
 
+      // 📇 Automated Bot Admin Contact Card (vCard) Setup
+      const adminVcard = 
+        'BEGIN:VCARD\n' +
+        'VERSION:3.0\n' +
+        'FN:Emmysmart Bot Admin 👑\n' +
+        `TEL;type=CELL;type=VOICE;waid=${cleanAdminNumber}:+${cleanAdminNumber}\n' +
+        'END:VCARD';
+
+   // 📥 Dispatch both the simplified message and the clickable contact card to the owner
       await sock.sendMessage(ownerJid, { text: expiredWarningMsg });
+      await sock.sendMessage(ownerJid, { 
+        contacts: { 
+          displayName: 'Emmysmart Bot Admin 👑', 
+          contacts: [{ vcard: adminVcard }] 
+        } 
+      }, { ephemeralExpiration: 60 });
+
     } catch (err) {}
   };
 
