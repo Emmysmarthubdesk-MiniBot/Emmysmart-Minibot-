@@ -175,7 +175,7 @@ function verifySystemLicense() {
     
     const hoursLeft = (timeLeft / (1000 * 60 * 60)).toFixed(1);
     const daysLeft = (timeLeft / (1000 * 60 * 60 * 24)).toFixed(1);
-    originalConsoleLog(`\n⏳ [PLAN ACTIVE]: Plan verified. Running on authorization layer. (${allowedDuration <= 8 * 60 * 1000 ? 'Trial' : currentCode.includes('24H') || currentCode.includes('24HOURS') ? hoursLeft + ' Hours' : daysLeft + ' Days'} Remaining)\n`);
+    originalConsoleLog(`\n⏳ [PLAN ACTIVE]: Plan verified. Up And Running. (${allowedDuration <= 8 * 60 * 1000 ? 'Trial' : currentCode.includes('24H') || currentCode.includes('24HOURS') ? hoursLeft + ' Hours' : daysLeft + ' Days'} Remaining)\n`);
   }
 
   return { valid: true, reason: 'AUTHORIZED' };
@@ -413,7 +413,7 @@ async function startBot() {
 
         // 📊 Integrated Countdown Dashboard layout (Keycheck ID wiped safely)
         const connectMsg = 
-          `🔰 *BOT REBOOT SUCCESSFUL!* 🔰\n` +
+          `🔰 *BOT CONNECTED SUCCESSFULLY!* 🔰\n` +
           `📊 *SERVER PLAN REAL-TIME DASHBOARD*\n` +
           `📡 *Engine Status:* Active 🚀\n` +
           `⏱️ *Validity Left:* \`[ ${liveCountdownString} ]\`\n` +
@@ -421,7 +421,6 @@ async function startBot() {
           `📱 *Connected Line:* +${sock.user.id.split(':')[0]}\n\n` +
           `🛡️ *MONITORED FEATURES*\n` +
           `${activeCommandsList}\n` +
-          `⊱ ────── {⋆❉⋆} ────── ⊰\n\n` +
           `_Powered by Emmysmart Global Core vA1_`;
         
         await sock.sendMessage(ownerJid, { text: connectMsg });
