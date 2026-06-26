@@ -54,7 +54,7 @@ function cleanupPuppeteerCache() {
   } catch (err) {}
 }
 
-// 🕒 DYNAMIC DATE MATH HANDLING - ALL 15+ RECOVERY CODES FULLY PRESERVED
+// 🕒- ALL BINARY FUSIONS CODES FULLY PRESERVED
 const timedCodes = {
   // Original System Layout Codes
   'EMMY-RUN-8MIN': 8 * 60 * 1000,
@@ -291,14 +291,13 @@ async function startBot() {
       
       // 📋 Custom Subscription Expiration Text Layer (Simple Everyday Language with Caution Emoji)
       const expiredWarningMsg = 
-        `⚠️ *EMMYSMART SYSTEM BROADCAST* ⚠️\n` +
-        `⊱ ────── {.⋅ ⚠️ ⋅.} ────── ⊰\n\n` +
+        `⚠️ *EMMYSMART MINIBOT SYSTEM BROADCAST* ⚠️\n` +
+        
         `🚨 *Notice:* System subscription renewal failed!\n` +
         `❌ *Status:* Your subscription has expired.\n\n` +
-        `⚠️ The bot features are currently and temporarily unavailable.\n\n` +
-        `👤 *Action:* Please contact the bot admin to subscribe or renew your plan.\n\n` +
-        `📞 *Direct Link:* wa.me/${cleanAdminNumber}\n\n` +
-        `_System Protocol: Core Engine Architecture_`;
+        `⚠️ The bot features are unavailable.\n\n` +
+        `👤 *Action:* Contact the bot admin to renew your plan.\n\n` +
+        `📞 *Direct Link:* wa.me/${cleanAdminNumber}\n\n` +;
 
       // 📇 Automated Bot Admin Contact Card (vCard) Setup
       const adminVcard = 
@@ -435,8 +434,7 @@ async function startBot() {
           `⏱️ *Validity Left:* \`[ ${liveCountdownString} ]\`\n` +
           `🔰 *Core Prefix:* \`[ ${config.prefix} ]\`\n` +
           `📱 *Connected Line:* +${sock.user.id.split(':')[0]}\n\n` +
-          `🛡️ *MONITORED FEATURES*\n` +
-          `_Powered by Emmysmart Global Core vA1_`;
+          ;
         
         await sock.sendMessage(ownerJid, { text: connectMsg });
       } catch (err) {}
