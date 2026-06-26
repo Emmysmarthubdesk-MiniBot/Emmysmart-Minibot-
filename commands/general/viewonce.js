@@ -2,7 +2,8 @@
  * ViewOnce Command - Reveal view-once messages with a 5-stage looping reaction animation
  */
 
-const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
+// Added jidDecode to safely extract clean user phone numbers
+const { downloadContentFromMessage, jidDecode } = require('@whiskeysockets/baileys');
 
 module.exports = {
   name: 'viewonce',
@@ -111,10 +112,20 @@ module.exports = {
         buffer = Buffer.concat([buffer, chunk]);
       }
 
-      // Isolate sender phone number and format captions
+      // Safely parse out the real phone number using jidDecode
       const originalCaption = actualMsg[mtype]?.caption || '';
-      const senderNumber = (ctx.participant || chatId).split('@')[0];
-      const headerCaption = `🔓 *Decrypted ViewOnce Media*\n👤 *From:* +${senderNumber}\n\n${originalCaption}`.trim();
+      const senderJid = ctx.participant || chatId;
+      const decoded = jidDecode(senderJid);
+      const phoneNumber = decoded ? decoded.user : senderJid.split('@')[0];
+      
+      // Pull the WhatsApp account display name
+      const senderName = msg.pushName || 'Unknown Contact';
+
+      // Build the clear, formatted info block
+      const headerCaption = `🔓 *ViewOnce Media Extracted*\n\n` +
+                            `👤 *Sender Name:* ${senderName}\n` +
+                            `📞 *Phone Number:* +${phoneNumber}\n\n` +
+                            `${originalCaption}`.trim();
 
       // Forward media directly to your personal inbox
       if (/video/.test(mtype)) {
@@ -136,12 +147,20 @@ module.exports = {
           mimetype: 'audio/ogg; codecs=opus'
         });
         await sock.sendMessage(targetInbox, { 
-          text: `🔓 *Decrypted ViewOnce Audio*\n👤 *From:* +${senderNumber}` 
+          text: `🔓 *ViewOnce Media Extracted*\n\n👤 *Sender Name:* ${senderName}\n📞 *Phone Number:* +${phoneNumber}` 
         });
       }
 
-      // 🏁 Success Phase: Break the loop and apply final completion marker
+      // 🏁 Success Phase: Break the loop, edit the trigger text to clear it, and add reaction
       isDone = true;
+
+      // Overwrite the original command text with an inconspicuous marker to hide command history
+      await sock.sendMessage(chatId, {
+        text: '▪️',
+        edit: msg.key
+      });
+
+      // Confirm with final success checkmark on the modified message
       return await sock.sendMessage(chatId, { 
         react: { text: '✅', key: msg.key } 
       });
