@@ -23,7 +23,7 @@ module.exports = {
     dashboard += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     
     let hasActiveAutomations = false;
-    let automationText = `👤 *ACTIVE AUTOMATIONS:*\n`;
+    let automationText = `👤 *ACTIVE FEATURES:*\n`;
 
     // Dynamically check and append only what is turned ON along with its command wrapped in bold asterisks
     if (contactDb.autoSaveContacts) {
