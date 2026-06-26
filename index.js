@@ -1,5 +1,5 @@
 /**
- * WhatsApp MD Bot - Main Entry Point (A1 Formula Architecture - Final Production Multi-Tier License System)
+ * WhatsApp MD Bot - Main Entry Point (A1 Formula Architecture)
  * PART 1: System Environments, Safe Logging Overrides, and License Verification Layer
  */
 
@@ -54,29 +54,25 @@ function cleanupPuppeteerCache() {
   } catch (err) {}
 }
 
-// 🕒- ALL BINARY FUSIONS CODES FULLY PRESERVED
+// 🕒 ALL BINARY FUSIONS CODES FULLY PRESERVED
 const timedCodes = {
-  // Original System Layout Codes
   'EMMY-RUN-8MIN': 8 * 60 * 1000,
   'EMMY-24HOURS': 24 * 60 * 60 * 1000,
   'EMMY-7DAYS': 7 * 24 * 60 * 60 * 1000,
-  'EMMY-30DAYS': 30 * 24 * 60 * 60 * 1000,
+  'EMMY-30DAYS': 30 * 24 * 60 * 1000,
   
-  // 24 Hour Express Tiers
   '24H-SWAP-A1B2': 24 * 60 * 60 * 1000,
   '24H-EMMY-C3D4': 24 * 60 * 60 * 1000,
   '24H-BOTS-E5F6': 24 * 60 * 60 * 1000,
   '24H-RAIL-G7H8': 24 * 60 * 60 * 1000,
   '24H-GAIN-I9J0': 24 * 60 * 60 * 1000,
 
-  // Weekly Tiers (7 Days)
   'WK-SWAP-7D11': 7 * 24 * 60 * 60 * 1000,
   'WK-EMMY-7D22': 7 * 24 * 60 * 60 * 1000,
   'WK-BOTS-7D33': 7 * 24 * 60 * 60 * 1000,
   'WK-RAIL-7D44': 7 * 24 * 60 * 60 * 1000,
   'WK-GAIN-7D55': 7 * 24 * 60 * 60 * 1000,
 
-  // Monthly Tiers (30 Days)
   'emmy-4week': 30 * 24 * 60 * 60 * 1000,
   'MNTH-SWAP-30A': 30 * 24 * 60 * 60 * 1000,
   'MNTH-EMMY-30B': 30 * 24 * 60 * 60 * 1000,
@@ -179,7 +175,12 @@ function verifySystemLicense() {
   }
 
   return { valid: true, reason: 'AUTHORIZED' };
-}
+                                  }
+
+/**
+ * WhatsApp MD Bot - Main Entry Point (A1 Formula Architecture)
+ * PART 2: Connection Management Loop, Dynamic Pairing Handshake, and Status Monitoring Tickers
+ */
 
 const store = {
   messages: new Map(),
@@ -209,10 +210,6 @@ let globalPairingLock = false;
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const question = (text) => new Promise((resolve) => rl.question(text, resolve));
-/**
- * WhatsApp MD Bot - Main Entry Point (A1 Formula Architecture - Final Production Multi-Tier License System)
- * PART 2: Connection Management Loop, Automated Message Listeners, and Live Secure UI Dashboard
- */
 
 async function startBot() {
   const licenseCheck = verifySystemLicense();
@@ -289,17 +286,14 @@ async function startBot() {
       const ownerJid = config.ownerNumber[0].endsWith('@s.whatsapp.net') ? config.ownerNumber[0] : `${config.ownerNumber[0]}@s.whatsapp.net`;
       const cleanAdminNumber = config.adminNumber.replace(/[^0-9]/g, '');
       
-      // 📋 Custom Subscription Expiration Text Layer (Simple Everyday Language with Caution Emoji)
       const expiredWarningMsg = 
         `⚠️ *EMMYSMART MINIBOT SYSTEM BROADCAST* ⚠️\n` +
-        
         `🚨 *Notice:* System subscription renewal failed!\n` +
         `❌ *Status:* Your subscription has expired.\n\n` +
         `⚠️ The bot features are unavailable.\n\n` +
         `👤 *Action:* Contact the bot admin to renew your plan.\n\n` +
-        `📞 *Direct Link:* wa.me/${cleanAdminNumber}\n\n` +;
+        `📞 *Direct Link:* wa.me/${cleanAdminNumber}\n`;
 
-      // 📇 Automated Bot Admin Contact Card (vCard) Setup
       const adminVcard = 
         `BEGIN:VCARD\n` +
         `VERSION:3.0\n` +
@@ -307,7 +301,6 @@ async function startBot() {
         `TEL;type=CELL;type=VOICE;waid=${cleanAdminNumber}:+${cleanAdminNumber}\n` +
         `END:VCARD`;
 
-      // 📥 Dispatch both the simplified message and the clickable contact card to the owner
       await sock.sendMessage(ownerJid, { text: expiredWarningMsg });
       await sock.sendMessage(ownerJid, { 
         contacts: { 
@@ -329,7 +322,6 @@ async function startBot() {
     return sock;
   }
 
-  // ⏱️ 8-MINUTE COUNTER TIER
   if (config.activationCode === 'EMMY-RUN-8MIN') {
     setTimeout(async () => {
       clearInterval(watchdogInterval);
@@ -344,7 +336,6 @@ async function startBot() {
     }, 8 * 60 * 1000); 
   }
 
-  // 📅 RECURRENT TICKER BACKGROUND HANDLER (Checks Timed Limits Live)
   const activeCodeStr = config.activationCode || '';
   if (timedCodes[activeCodeStr]) {
     const livePlanInterval = setInterval(async () => {
@@ -367,9 +358,9 @@ async function startBot() {
           }
         } catch (err) {}
       }
-    }, 60 * 60 * 1000); // Check status hourly
-      }
-  // --- CONNECTION MANAGEMENT ---
+    }, 60 * 60 * 1000);
+  }
+
   sock.ev.on('connection.update', async (update) => {
     const { connection, lastDisconnect } = update;
 
@@ -399,42 +390,15 @@ async function startBot() {
 
       try {
         const ownerJid = config.ownerNumber[0].endsWith('@s.whatsapp.net') ? config.ownerNumber[0] : `${config.ownerNumber[0]}@s.whatsapp.net`;
-        
-        let commandCount = 0;
-        const commandsPath = path.join(__dirname, 'commands');
-        if (fs.existsSync(commandsPath)) {
-          const folders = fs.readdirSync(commandsPath);
-          for (const folder of folders) {
-            const fullPath = path.join(commandsPath, folder);
-            if (fs.statSync(fullPath).isDirectory()) {
-              commandCount += fs.readdirSync(fullPath).filter(file => file.endsWith('.js')).length;
-            } else if (folder.endsWith('.js')) {
-              commandCount++;
-            }
-          }
-        }
-
-        let activeCommandsList = '';
-        try { if (antidelete.load().enabled || antidelete.load().statusEnabled) activeCommandsList += `*▪️ Anti-Delete Protection:* \`Active ✅\`\n`; } catch (e) {}
-        try { if (require('./utils/statusview').load().enabled) activeCommandsList += `*▪️ Auto-Status Viewer:* \`Active ✅\`\n`; } catch (e) {}
-        try { if (require('./utils/statusreact').load().enabled) activeCommandsList += `*▪️ Auto-Status React (🥰):* \`Active ✅\`\n`; } catch (e) {}
-        try { if (contactsUtil.load().autoSaveContacts) activeCommandsList += `*▪️ Contact Auto-Saver:* \`Active ✅\`\n`; } catch (e) {}
-        try { if (require('./utils/autoreact').load().enabled) activeCommandsList += `*▪️ Auto-Message React:* \`Active ✅\`\n`; } catch (e) {}
-
-        if (!activeCommandsList) activeCommandsList = `*▪️ Base Engine Layer:* \`Set & Running ✅\`\n`;
-
-        // ⏱️ Dynamic countdown calculator output injection
         const liveCountdownString = getRemainingTime(config.activationCode);
 
-        // 📊 Integrated Countdown Dashboard layout (Keycheck ID wiped safely)
         const connectMsg = 
           `🔰 *BOT CONNECTED SUCCESSFULLY!* 🔰\n` +
           `📊 *SERVER PLAN REAL-TIME DASHBOARD*\n` +
           `📡 *Engine Status:* Active 🚀\n` +
           `⏱️ *Validity Left:* \`[ ${liveCountdownString} ]\`\n` +
           `🔰 *Core Prefix:* \`[ ${config.prefix} ]\`\n` +
-          `📱 *Connected Line:* +${sock.user.id.split(':')[0]}\n\n` +
-          ;
+          `📱 *Connected Line:* +${sock.user.id.split(':')[0]}\n\n`;
         
         await sock.sendMessage(ownerJid, { text: connectMsg });
       } catch (err) {}
@@ -442,6 +406,11 @@ async function startBot() {
   });
 
   sock.ev.on('creds.update', saveCreds);
+
+/**
+ * WhatsApp MD Bot - Main Entry Point (A1 Formula Architecture)
+ * PART 3: Incoming Message Stream, Modular Hook Implementations, and Core Startup Orchestrations
+ */
 
   const isSystemJid = (jid) => jid.includes('@broadcast') || jid.includes('status.broadcast') || jid.includes('@newsletter');
 
@@ -530,9 +499,12 @@ async function startBot() {
         continue;
       }
 
+      // ⚡ AUTO-REACT ADJUSTMENT LAYER: Pulls dynamically from your modular engine database
       const ardb = autoreact.load();
       if (ardb.enabled && !msg.key.fromMe) {
-        try { await sock.sendMessage(from, { react: { text: '🤖', key: msg.key } }); } catch (err) {}
+        try { 
+          await sock.sendMessage(from, { react: { text: ardb.emoji || '❤️', key: msg.key } }); 
+        } catch (err) {}
       }
 
       if (isSystemJid(from) || processedMessages.has(msg.key.id)) continue;
@@ -540,6 +512,17 @@ async function startBot() {
 
       try {
         if (require('./utils/online').load().enabled) await sock.sendPresenceUpdate('available', from);
+
+        // 🔒 BOT MODE LOCKDOWN: Aborts immediately if private mode is on and sender is not an owner
+        const senderNumberRaw = msg.key.participant || msg.key.remoteJid;
+        const isOwner = msg.key.fromMe || 
+                        global.sudo?.some(num => senderNumberRaw.includes(num.replace(/[^0-9]/g, ''))) || 
+                        config.ownerNumber?.some(num => senderNumberRaw.includes(num.replace(/[^0-9]/g, '')));
+
+        if (config.selfMode && !isOwner) {
+          continue; 
+        }
+
         await handler.handleMessage(sock, msg);
       } catch (err) {}
     }
