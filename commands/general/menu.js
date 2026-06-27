@@ -31,8 +31,8 @@ module.exports = {
       const displayOwner = ownerNames[0] || config.ownerName || 'Bot Owner';
       
       let menuText = `╭━━『 *${config.botName}* 』━━╮\n\n`;
-      menuText += `👋 Hello @${extra.sender.split('@')[0]}!\n\n`;
-      menuText += `⚡ Prefix: ${config.prefix}\n`;
+      menuText += `🙇 Welcome @${extra.sender.split('@')[0]}!\n\n`;
+      menuText += `🔖 Prefix: ${config.prefix}\n`;
       menuText += `📦 Total Commands: ${commands.size}\n`;
       menuText += `👑 Owner: ${displayOwner}\n\n`;
       
