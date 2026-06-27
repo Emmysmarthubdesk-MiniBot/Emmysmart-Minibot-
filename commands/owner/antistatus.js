@@ -9,7 +9,7 @@ module.exports = {
     const configData = antidelete.load();
     
     if (!args[0]) {
-      return reply(`📊 *Status Anti-Delete Status:* ${configData.statusEnabled ? 'ON ✅' : 'OFF ❌'}\nTo toggle, use: \x1b[1m.antideletestatus on\x1b[0m or \x1b[1m.antideletestatus off\x1b[0m`);
+      return reply(`📊 *Status Anti-Delete Status:* ${configData.statusEnabled ? 'ON ✅' : 'OFF 🚫'}\nTo toggle, use: \x1b[1m.antideletestatus on\x1b[0m or \x1b[1m.antideletestatus off\x1b[0m`);
     }
 
     if (args[0].toLowerCase() === 'on') {
