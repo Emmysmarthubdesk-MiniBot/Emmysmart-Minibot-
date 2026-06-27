@@ -15,7 +15,7 @@ module.exports = {
         save(db);
         // Explicitly set to 'available' to ensure the state updates on the server
         await sock.sendPresenceUpdate('available'); 
-        return extra.reply('✅ online mode enabled. The bot will now show active status when receiving messages.');
+        return extra.reply('✅ online mode enabled.');
       }
 
       if (opt === 'off') {
