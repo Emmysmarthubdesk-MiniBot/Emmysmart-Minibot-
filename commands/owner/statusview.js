@@ -13,7 +13,7 @@ module.exports = {
       if (opt === 'on') {
         db.enabled = true;
         save(db);
-        return extra.reply('👁️ statusview enabled.');
+        return extra.reply('✅ statusview enabled.');
       }
 
       if (opt === 'off') {
