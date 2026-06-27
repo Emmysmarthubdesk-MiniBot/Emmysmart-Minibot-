@@ -18,7 +18,7 @@ module.exports = {
         const responseTime = end - start;
         
         await sock.sendMessage(extra.from, {
-          text: `🏓 *Pong!*\n⚡ Response Time: ${responseTime}ms`,
+          text: `🏓 *Pong!*\n⌛ Response Time: ${responseTime}ms`,
           edit: sent.key
         });
         
