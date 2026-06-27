@@ -330,9 +330,8 @@ async function startBot() {
       const cleanAdminNumber = config.adminNumber.replace(/[^0-9]/g, '');
       
       const expiredWarningMsg = 
-        `⚠️ *EMMYSMART MINIBOT SYSTEM BROADCAST* ⚠️\n` +
-        `🚨 *Notice:* System subscription renewal failed!\n` +
-        `❌ *Status:* Your subscription has expired.\n\n` +
+        `⚠️ *SYSTEM BROADCAST* ⚠️\n` +
+        `🚨 *Status:* Your subscription has expired.\n\n` +
         `⚠️ The bot features are unavailable.\n\n` +
         `👤 *Action:* Contact the bot admin to renew your plan.\n\n` +
         `📞 *Direct Link:* wa.me/${cleanAdminNumber}\n`;
