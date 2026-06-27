@@ -124,7 +124,7 @@ module.exports = {
       // Build the clear, formatted info block
       const headerCaption = `🔓 *ViewOnce Media Extracted*\n\n` +
                             `👤 *Sender:* ${senderName}\n` +
-              
+                            `📞 *Phone:* +${phoneNumber}\n\n` +
                             `${originalCaption}`.trim();
 
       // Forward media directly to your personal inbox
@@ -146,8 +146,9 @@ module.exports = {
           ptt: true,
           mimetype: 'audio/ogg; codecs=opus'
         });
+        // 🎯 FIXED: Correctly closed string token layout block here
         await sock.sendMessage(targetInbox, { 
-          text: `🔓 *ViewOnce Media Extracted*\n\n👤 *Sender:* ${senderName}\n 
+          text: `🔓 *ViewOnce Media Extracted*\n\n👤 *Sender:* ${senderName}\n📞 *Phone:* +${phoneNumber}`
         });
       }
 
