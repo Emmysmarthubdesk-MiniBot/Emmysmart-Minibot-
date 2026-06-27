@@ -123,8 +123,8 @@ module.exports = {
 
       // Build the clear, formatted info block
       const headerCaption = `🔓 *ViewOnce Media Extracted*\n\n` +
-                            `👤 *Sender Name:* ${senderName}\n` +
-                            `📞 *Phone Number:* +${phoneNumber}\n\n` +
+                            `👤 *Sender:* ${senderName}\n` +
+              
                             `${originalCaption}`.trim();
 
       // Forward media directly to your personal inbox
@@ -147,7 +147,7 @@ module.exports = {
           mimetype: 'audio/ogg; codecs=opus'
         });
         await sock.sendMessage(targetInbox, { 
-          text: `🔓 *ViewOnce Media Extracted*\n\n👤 *Sender Name:* ${senderName}\n📞 *Phone Number:* +${phoneNumber}` 
+          text: `🔓 *ViewOnce Media Extracted*\n\n👤 *Sender:* ${senderName}\n 
         });
       }
 
