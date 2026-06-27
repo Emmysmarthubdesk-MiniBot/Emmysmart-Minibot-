@@ -19,8 +19,7 @@ module.exports = {
     const autoReactDb = autoreact.load();
     const onlineDb = online.load();
 
-    let dashboard = `⚙️ *ACTIVE SYSTEM DASHBOARD* ⚙️\n`;
-    dashboard += `━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    let dashboard = `⚙️ *BOT STATUS DASHBOARD* ⚙️\n`;
     
     let hasActiveAutomations = false;
     let automationText = `👤 *ACTIVE FEATURES:*\n`;
@@ -55,11 +54,7 @@ module.exports = {
       hasActiveAutomations = true;
     }
 
-    // Include the status command itself if everything else is off
-    automationText += `• *Status Dashboard*: 🟢 Enabled \`[ .botstatus ]\`\n`;
-
     dashboard += automationText;
-    dashboard += `━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
     await sock.sendMessage(msg.key.remoteJid, { text: dashboard });
   }
