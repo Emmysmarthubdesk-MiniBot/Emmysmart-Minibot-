@@ -91,7 +91,7 @@ module.exports = {
                 
                 const responseText = 
                     `🎧 *SHAZAM AUDIO IDENTIFIER* 🎧\n` +
-                    `⊱ ────── {.⋅ 🎵 ⋅.} ────── ⊰\n\n` +
+                    
                     `📌 *Title:* \`${songTitle}\`\n` +
                     `🎤 *Artist:* \`${artistName}\`\n\n` +
                     `> *_Downloaded by Emmysmart Mini Bot_*`;
