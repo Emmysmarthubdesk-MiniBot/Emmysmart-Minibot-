@@ -2,7 +2,6 @@
  * ViewOnce Command - Reveal view-once messages with a 5-stage looping reaction animation
  */
 
-// Added jidDecode to safely extract clean user phone numbers
 const { downloadContentFromMessage, jidDecode } = require('@whiskeysockets/baileys');
 
 module.exports = {
@@ -20,31 +19,21 @@ module.exports = {
     let isDone = false;
     let emojiIndex = 0;
 
-    // 🔄 Non-blocking background animation loop sequence
     const startReactionAnimation = async () => {
       while (!isDone) {
         try {
           const currentEmoji = processingEmojis[emojiIndex % processingEmojis.length];
-          await sock.sendMessage(chatId, { 
-            react: { text: currentEmoji, key: msg.key } 
-          });
+          await sock.sendMessage(chatId, { react: { text: currentEmoji, key: msg.key } });
           emojiIndex++;
-        } catch (e) {
-          // Suppress background write/network log drops during animation frames
-        }
-        // Controls rotation speed (600ms per frame update)
+        } catch (e) {}
         await new Promise(resolve => setTimeout(resolve, 600));
       }
     };
 
     try {
-      // Trigger the multi-emoji processing phase immediately
       startReactionAnimation();
 
-      // Derive the owner's personal self-chat JID
       const targetInbox = sock.user.id.split(':')[0] + '@s.whatsapp.net';
-
-      // Get contextInfo from the message you replied to
       const ctx = msg.message?.extendedTextMessage?.contextInfo
         || msg.message?.imageMessage?.contextInfo
         || msg.message?.videoMessage?.contextInfo
@@ -52,27 +41,25 @@ module.exports = {
         || msg.message?.listResponseMessage?.contextInfo;
 
       if (!ctx?.quotedMessage || !ctx?.stanzaId) {
-        isDone = true; // Stop loop
+        isDone = true;
         return await sock.sendMessage(chatId, { react: { text: '⚠️', key: msg.key } });
       }
 
       const quotedMsg = ctx.quotedMessage;
 
-      // Verify if the quoted message contains view-once configurations
-      const hasViewOnce =
-        !!quotedMsg.viewOnceMessageV2 ||
-        !!quotedMsg.viewOnceMessageV2Extension ||
-        !!quotedMsg.viewOnceMessage ||
-        !!quotedMsg.viewOnce ||
-        !!quotedMsg?.imageMessage?.viewOnce ||
-        !!quotedMsg?.videoMessage?.viewOnce ||
-        !!quotedMsg?.audioMessage?.viewOnce;
+      // Integrated detection logic
+      const isViewOnce = !!(
+        quotedMsg.viewOnceMessageV2 || quotedMsg.viewOnceMessageV2Extension ||
+        quotedMsg.viewOnceMessage || quotedMsg.imageMessage?.viewOnce ||
+        quotedMsg.videoMessage?.viewOnce || quotedMsg.audioMessage?.viewOnce
+      );
 
-      if (!hasViewOnce) {
-        isDone = true; // Stop loop
+      if (!isViewOnce) {
+        isDone = true;
         return await sock.sendMessage(chatId, { react: { text: '❌', key: msg.key } });
       }
 
+      // Extraction and Buffer logic
       let actualMsg = null;
       let mtype = null;
 
@@ -96,83 +83,41 @@ module.exports = {
         mtype = 'audioMessage';
       }
 
-      if (!actualMsg || !mtype) {
-        isDone = true; // Stop loop
-        return await sock.sendMessage(chatId, { react: { text: '❌', key: msg.key } });
-      }
-
-      const downloadType =
-        mtype === 'imageMessage' ? 'image' : mtype === 'videoMessage' ? 'video' : 'audio';
-
-      // Download the media stream from WhatsApp servers
+      const downloadType = mtype === 'imageMessage' ? 'image' : mtype === 'videoMessage' ? 'video' : 'audio';
       const mediaStream = await downloadContentFromMessage(actualMsg[mtype], downloadType);
 
       let buffer = Buffer.from([]);
-      for await (const chunk of mediaStream) {
-        buffer = Buffer.concat([buffer, chunk]);
-      }
+      for await (const chunk of mediaStream) buffer = Buffer.concat([buffer, chunk]);
 
-      // Safely parse out the real phone number using jidDecode
-      const originalCaption = actualMsg[mtype]?.caption || '';
+      // Sender Info Parsing
       const senderJid = ctx.participant || chatId;
       const decoded = jidDecode(senderJid);
       const phoneNumber = decoded ? decoded.user : senderJid.split('@')[0];
-      
-      // Pull the WhatsApp account display name
       const senderName = msg.pushName || 'Unknown Contact';
+      const originalCaption = actualMsg[mtype]?.caption || '';
 
-      // Build the clear, formatted info block
-      const headerCaption = `🔓 *ViewOnce Media Extracted*\n\n` +
+      const headerCaption = `🚨 *ViewOnce Media* 🚨\n\n` +
                             `👤 *Sender:* ${senderName}\n` +
                             `📞 *Phone:* +${phoneNumber}\n\n` +
                             `${originalCaption}`.trim();
 
-      // Forward media directly to your personal inbox
-      if (/video/.test(mtype)) {
-        await sock.sendMessage(targetInbox, {
-          video: buffer,
-          caption: headerCaption,
-          mimetype: 'video/mp4'
-        });
-      } else if (/image/.test(mtype)) {
-        await sock.sendMessage(targetInbox, {
-          image: buffer,
-          caption: headerCaption,
-          mimetype: 'image/jpeg'
-        });
-      } else if (/audio/.test(mtype)) {
-        await sock.sendMessage(targetInbox, {
-          audio: buffer,
-          ptt: true,
-          mimetype: 'audio/ogg; codecs=opus'
-        });
-        // 🎯 FIXED: Correctly closed string token layout block here
-        await sock.sendMessage(targetInbox, { 
-          text: `🔓 *ViewOnce Media Extracted*\n\n👤 *Sender:* ${senderName}\n📞 *Phone:* +${phoneNumber}`
-        });
+      // Final Delivery
+      if (mtype === 'videoMessage') {
+        await sock.sendMessage(targetInbox, { video: buffer, caption: headerCaption, mimetype: 'video/mp4' });
+      } else if (mtype === 'imageMessage') {
+        await sock.sendMessage(targetInbox, { image: buffer, caption: headerCaption, mimetype: 'image/jpeg' });
+      } else if (mtype === 'audioMessage') {
+        await sock.sendMessage(targetInbox, { audio: buffer, ptt: true, mimetype: 'audio/ogg; codecs=opus' });
+        await sock.sendMessage(targetInbox, { text: headerCaption });
       }
 
-      // 🏁 Success Phase: Break the loop, edit the trigger text to clear it, and add reaction
       isDone = true;
-
-      // Overwrite the original command text with an inconspicuous marker to hide command history
-      await sock.sendMessage(chatId, {
-        text: '▪️',
-        edit: msg.key
-      });
-
-      // Confirm with final success checkmark on the modified message
-      return await sock.sendMessage(chatId, { 
-        react: { text: '✅', key: msg.key } 
-      });
+      await sock.sendMessage(chatId, { text: '▪️', edit: msg.key });
+      return await sock.sendMessage(chatId, { react: { text: '✅', key: msg.key } });
 
     } catch (error) {
-      console.error('Error in viewonce command:', error);
-      // 🛑 Failure Phase: Break the loop and apply error marker
       isDone = true;
-      try {
-        await sock.sendMessage(chatId, { react: { text: '❌', key: msg.key } });
-      } catch (e) {}
+      try { await sock.sendMessage(chatId, { react: { text: '❌', key: msg.key } }); } catch (e) {}
     }
   }
 };
